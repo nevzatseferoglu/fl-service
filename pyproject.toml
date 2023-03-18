@@ -7,7 +7,9 @@ readme = "README.md"
 packages = [{include = "fl_service"}]
 
 [tool.poetry.dependencies]
-python = "3.10"
+python = "3.10.7"
+uvicorn = {extras = ["standard"], version = "^0.21.1"}
+fastapi = "^0.94.1"
 
 
 [build-system]
