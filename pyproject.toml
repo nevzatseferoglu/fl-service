@@ -10,6 +10,8 @@ packages = [{include = "fl_service"}]
 python = "3.10.7"
 uvicorn = {extras = ["standard"], version = "^0.21.1"}
 fastapi = "^0.94.1"
+ansible-runner = "^2.3.2"
+ansible = "^7.3.0"
 
 
 [build-system]

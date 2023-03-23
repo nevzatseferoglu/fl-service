@@ -1,0 +1,32 @@
+---
+- name: Check SSH or WinRM and Python on Managed Nodes
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Check SSH or WinRM
+      raw: ssh -V || winrm id
+      register: ssh_winrm_output
+      ignore_errors: true
+
+    - name: Check Python
+      raw: python --version
+      register: python_output
+      ignore_errors: true
+
+    - name: Print SSH/WinRM and Python status
+      debug:
+        msg: |
+          SSH/WinRM Status: {{ 'Available' if not ssh_winrm_output.rc else 'Not Available' }}
+          Python Status: {{ 'Available' if not python_output.rc else 'Not Available' }}
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Run a command to print the current date
+      command: date
+      register: current_date
+
+    - name: Print the current date
+      debug:
+        var: current_date.stdout
+
