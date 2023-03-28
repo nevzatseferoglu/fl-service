@@ -19,14 +19,14 @@
           SSH/WinRM Status: {{ 'Available' if not ssh_winrm_output.rc else 'Not Available' }}
           Python Status: {{ 'Available' if not python_output.rc else 'Not Available' }}
 
-- hosts: localhost
-  gather_facts: no
-  tasks:
-    - name: Run a command to print the current date
-      command: date
-      register: current_date
-
-    - name: Print the current date
-      debug:
-        var: current_date.stdout
+# - hosts: localhost
+#   gather_facts: no
+#   tasks:
+#     - name: Run a command to print the current date
+#       command: date
+#       register: current_date
+#
+#     - name: Print the current date
+#       debug:
+#         var: current_date.stdout
 
