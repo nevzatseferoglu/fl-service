@@ -63,5 +63,6 @@ help:
 # @echo " docker-rm    Remove the Docker container"
 # @echo " test         Run the tests"
 # @echo " test-cov     Run the tests with code coverage"
+	@echo " lint         Run the linter(black, autoflake)"
 	@echo " clean        Remove code coverage files"
 	@echo " help         Print this help message"
