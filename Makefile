@@ -1,6 +1,5 @@
 .PHONY: run kill docker-build docker-run docker-stop docker-rm lint test test-cov clean
 
-# Define variables
 APP_NAME=fl-service
 PORT=8000
 TEST_CMD=pytest tests/
@@ -9,20 +8,17 @@ HTML_COV_DIR=htmlcov/
 DOCKER_IMAGE_NAME=fl-service
 DOCKER_CONTAINER_NAME=fl-service
 
-# FastAPI
 START_DIR = app
 START_FASTAPI_SOURCE = main
 VAR_NAME = app
 
 
-# Run the application locally
 run:
 	uvicorn ${START_DIR}.${START_FASTAPI_SOURCE}:${VAR_NAME} --reload --port ${PORT}
 
 kill:
 	ps aux | grep uvicorn | grep -v grep | awk '{print $$2}' | xargs kill -SIGINT
 
-# Run the application with Docker
 docker-build:
 	docker build -t ${DOCKER_IMAGE_NAME} .
 
@@ -39,20 +35,16 @@ lint:
 	autoflake --in-place --remove-all-unused-imports --recursive .
 	black .
 
-# Run the tests
 test:
 	${TEST_CMD}
 
-# Run the tests with code coverage
 test-cov:
 	pytest --cov-report term-missing --cov=${APP_NAME} tests/
 	coverage html -d ${HTML_COV_DIR} --omit="${APP_NAME}/__init__.py"
 
-# Remove the code coverage files
 clean:
 	rm -rf .pytest_cache .coverage htmlcov
 
-# Print help message
 help:
 	@echo "Available commands:"
 	@echo " run          Run the application locally"
