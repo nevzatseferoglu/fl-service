@@ -19,28 +19,28 @@ run:
 kill:
 	ps aux | grep uvicorn | grep -v grep | awk '{print $$2}' | xargs kill -SIGINT
 
-docker-build:
-	docker build -t ${DOCKER_IMAGE_NAME} .
+# docker-build:
+# 	docker build -t ${DOCKER_IMAGE_NAME} .
 
-docker-run:
-	docker run -d -p ${PORT}:${PORT} --name ${DOCKER_CONTAINER_NAME} ${DOCKER_IMAGE_NAME}
+# docker-run:
+# 	docker run -d -p ${PORT}:${PORT} --name ${DOCKER_CONTAINER_NAME} ${DOCKER_IMAGE_NAME}
 
-docker-stop:
-	docker stop ${DOCKER_CONTAINER_NAME}
+# docker-stop:
+# 	docker stop ${DOCKER_CONTAINER_NAME}
 
-docker-rm:
-	docker rm ${DOCKER_CONTAINER_NAME}
+# docker-rm:
+# 	docker rm ${DOCKER_CONTAINER_NAME}
 
 lint:
 	autoflake --in-place --remove-all-unused-imports --recursive .
 	black .
 
-test:
-	${TEST_CMD}
+# test:
+# 	${TEST_CMD}
 
-test-cov:
-	pytest --cov-report term-missing --cov=${APP_NAME} tests/
-	coverage html -d ${HTML_COV_DIR} --omit="${APP_NAME}/__init__.py"
+# test-cov:
+# 	pytest --cov-report term-missing --cov=${APP_NAME} tests/
+# 	coverage html -d ${HTML_COV_DIR} --omit="${APP_NAME}/__init__.py"
 
 clean:
 	rm -rf .pytest_cache .coverage htmlcov
