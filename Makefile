@@ -1,4 +1,4 @@
-.PHONY: run kill docker-build docker-run docker-stop docker-rm test test-cov clean
+.PHONY: run kill docker-build docker-run docker-stop docker-rm lint test test-cov clean
 
 # Define variables
 APP_NAME=fl-service
@@ -34,6 +34,10 @@ docker-stop:
 
 docker-rm:
 	docker rm ${DOCKER_CONTAINER_NAME}
+
+lint:
+	autoflake --in-place --remove-all-unused-imports --recursive .
+	black .
 
 # Run the tests
 test:

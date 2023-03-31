@@ -1,4 +1,3 @@
-
 from enum import Enum
 from ipaddress import IPv4Address
 from typing import Optional
@@ -6,20 +5,20 @@ from pydantic import BaseModel, validator
 
 
 class OS(str, Enum):
-    Linux = 'linux'
-    Windows = 'windows'
-    Macos = 'macos'
+    Linux = "linux"
+    Windows = "windows"
+    Macos = "macos"
 
 
 class IPAddress(BaseModel):
     address: str
-    
-    @validator('address')
+
+    @validator("address")
     def validate_address(cls, value):
         try:
             ip_address = IPv4Address(value)
         except ValueError as e:
-            raise ValueError('Invalid IP address') from e
+            raise ValueError("Invalid IP address") from e
         return str(ip_address)
 
 
