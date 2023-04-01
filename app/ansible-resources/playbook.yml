@@ -1,0 +1,10 @@
+---
+- name: Create a new directory on macOS
+  hosts: macbook
+  tasks:
+    - name: Create a new directory
+      file:
+        path: "/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/testdir"
+        state: directory
+        mode: '0755'
+
