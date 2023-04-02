@@ -11,10 +11,12 @@ DOCKER_CONTAINER_NAME=fl-service
 START_DIR = app
 START_FASTAPI_SOURCE = main
 VAR_NAME = app
+LOG_LEVEL = --log-level debug
 
+# $(LOG_LEVEL)
 
 run:
-	uvicorn ${START_DIR}.${START_FASTAPI_SOURCE}:${VAR_NAME} --reload --port ${PORT}
+	uvicorn ${START_DIR}.${START_FASTAPI_SOURCE}:${VAR_NAME} --reload --port ${PORT} 
 
 kill:
 	ps aux | grep uvicorn | grep -v grep | awk '{print $$2}' | xargs kill -SIGINT
