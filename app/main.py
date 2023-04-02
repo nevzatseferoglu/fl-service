@@ -6,7 +6,7 @@ import logging
 
 from app.utils.ssh import command_exists
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 
 from ansible_runner import run
 
@@ -31,7 +31,7 @@ def generate_ssh_key_pair():
     ssh_key_path = path.expanduser("~/.ssh/id_rsa.pub")
     if Path(ssh_key_path).is_file():
         logging.error("SSH key already exists!")
-        return HTTPException(status_code=400, detail="SSH key already exists!")
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SSH key already exists!", headers=None)
 
     ssh_path = path.expanduser("~/.ssh")
     if not Path(ssh_path).is_dir():
@@ -39,7 +39,7 @@ def generate_ssh_key_pair():
 
     if not command_exists("ssh-keygen"):
         logging.error("ssh-keygen command not found!")
-        return HTTPException(status_code=400, detail="ssh-keygen command not found!")
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ssh-keygen command not found!", headers=None)
 
     result = subprocess.run(
         ["ssh-keygen", "-t", "rsa", "-b", "4096", "-N", "", "-q", "-f", ssh_key_path],
@@ -50,7 +50,7 @@ def generate_ssh_key_pair():
 
     if result.returncode != 0:
         logging.error("SSH key generation failed!")
-        return HTTPException(status_code=400, detail="SSH key generation failed!")
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SSH key generation failed!", headers=None)
 
     return {"status": "SSH key generated successfully!"}
 
