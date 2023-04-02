@@ -4,6 +4,9 @@ from typing import Optional
 from pydantic import BaseModel, validator
 
 
+class StatusCheck(BaseModel):
+    status: str
+
 class OS(str, Enum):
     Linux = "linux"
     Windows = "windows"
