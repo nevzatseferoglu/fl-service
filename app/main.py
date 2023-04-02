@@ -32,30 +32,28 @@ def generate_ssh_key_pair():
     if Path(ssh_key_path).is_file():
         logging.error("SSH key already exists!")
         return HTTPException(status_code=400, detail="SSH key already exists!")
-    
+
     ssh_path = path.expanduser("~/.ssh")
     if not Path(ssh_path).is_dir():
-        makedirs("~/.ssh",mode=700, exist_ok=True)
-        
+        makedirs("~/.ssh", mode=700, exist_ok=True)
+
     if not command_exists("ssh-keygen"):
         logging.error("ssh-keygen command not found!")
         return HTTPException(status_code=400, detail="ssh-keygen command not found!")
 
     result = subprocess.run(
         ["ssh-keygen", "-t", "rsa", "-b", "4096", "-N", "", "-q", "-f", ssh_key_path],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) 
-    
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+
     if result.returncode != 0:
         logging.error("SSH key generation failed!")
         return HTTPException(status_code=400, detail="SSH key generation failed!")
 
     return {"status": "SSH key generated successfully!"}
 
-
-    
-
-
-    
 
 @app.post("/run_playbook")
 def run_playbook():
