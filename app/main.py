@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 from core.utils.ssh import command_exists
 from core.schemas.schema import StatusCheck
-from core.utils.exceptions import GenerateSSHKeyPairException
+from core.utils.exceptions import GenerateSSHKeyPairException, CopySSHKeyToRemoteException
 
 
 logging.basicConfig(
@@ -38,7 +38,7 @@ async def generate_ssh_key_pair_failed_exception_handler(
     )
 
 @app.post("/generate_ssh_key_pair")
-def generate_ssh_key_pair_v1():
+def generate_ssh_key_pair():
     """Generates an SSH key pair if one does not already exist."""
 
     ssh_key_path = path.expanduser("~/.ssh/id_rsa.pub")
@@ -69,3 +69,26 @@ def generate_ssh_key_pair_v1():
         raise GenerateSSHKeyPairException(name="SSH key generation failed!")
 
     return StatusCheck(status="SSH key generated successfully!")
+
+
+@app.post("/copy_ssh_key_to_remote")
+def copy_ssh_key_to_remote():
+    """Copies the SSH key to the remote host."""
+
+    ssh_key_path = path.expanduser("~/.ssh/id_rsa.pub")
+    if not Path(ssh_key_path).is_file():
+        logging.error("SSH key does not exist!")
+        raise CopySSHKeyToRemoteException(name="SSH key does not exist!")
+    
+    if not command_exists("ssh-copy-id"):
+        logging.error("ssh-keygen command not found!")
+        raise CopySSHKeyToRemoteException(name="ssh-copy-id command not found!")
+    
+
+
+
+
+
+
+
+
