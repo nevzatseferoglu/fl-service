@@ -1,23 +1,25 @@
-
 from enum import Enum
 from pydantic import BaseModel, IPvAnyAddress
 
+
 class StatusCheck(BaseModel):
-    '''Status check'''
+    """Status check"""
 
     status: str
 
+
 class Architecture(str, Enum):
-    '''Architecture type'''
+    """Architecture type"""
 
     x86 = "x86"
     x64 = "x64"
     arm = "arm"
     arm64 = "arm64"
 
+
 class OsType(str, Enum):
-    '''Operating system type'''
-    
+    """Operating system type"""
+
     linux = "linux"
     windows = "windows"
     macos = "macos"
@@ -28,8 +30,9 @@ class OsType(str, Enum):
     netbsd = "netbsd"
     openbsd = "openbsd"
 
+
 class OS(BaseModel):
-    '''Operating system'''
+    """Operating system"""
 
     type_os: OsType
     name: str | None = None
@@ -39,7 +42,7 @@ class OS(BaseModel):
 
 
 class RemoteMachine(BaseModel):
-    '''Remote machine to connect to'''
+    """Remote machine to connect to"""
 
     os: OS
     ip_address: IPvAnyAddress

@@ -1,4 +1,3 @@
-
 import logging
 
 from fastapi import FastAPI, Request, status
@@ -21,15 +20,13 @@ app = FastAPI(debug=True)
 
 app.include_router(ssh.router)
 
+
 @app.exception_handler(GenerateSSHKeyPairException)
 async def generate_ssh_key_pair_failed_exception_handler(
-    request: Request,
-    exc: GenerateSSHKeyPairException):
-    
-    logging.error(f"Machine Info: {request.client}") 
+    request: Request, exc: GenerateSSHKeyPairException
+):
+    logging.error(f"Machine Info: {request.client}")
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content={
-            "message": f"GenerateSSHKeyPairException: {exc.name}"
-        }
+        content={"message": f"GenerateSSHKeyPairException: {exc.name}"},
     )

@@ -1,4 +1,3 @@
-
 from typing import Any
 from os import path, makedirs
 import subprocess
@@ -9,12 +8,16 @@ from fastapi import APIRouter
 
 from app.internal.utils.ssh import command_exists
 from app.internal.schemas.schema import StatusCheck
-from app.internal.exceptions import GenerateSSHKeyPairException, CopySSHKeyToRemoteException
+from app.internal.exceptions import (
+    GenerateSSHKeyPairException,
+    CopySSHKeyToRemoteException,
+)
 
 router = APIRouter(
     prefix="/ssh",
     tags=["ssh"],
 )
+
 
 @router.post("/generate_ssh_key_pair")
 def generate_ssh_key_pair() -> Any:
@@ -56,8 +59,7 @@ def copy_ssh_key_to_remote() -> Any:
     if not Path(ssh_key_path).is_file():
         logging.error("SSH key does not exist!")
         raise CopySSHKeyToRemoteException(name="SSH key does not exist!")
-    
+
     if not command_exists("ssh-copy-id"):
         logging.error("ssh-keygen command not found!")
         raise CopySSHKeyToRemoteException(name="ssh-copy-id command not found!")
-    

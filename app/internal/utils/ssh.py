@@ -1,7 +1,7 @@
-
 import os
 import subprocess
 import logging
+
 
 def command_exists(cmd: str) -> bool:
     """
