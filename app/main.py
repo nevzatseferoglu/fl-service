@@ -4,7 +4,7 @@ import logging
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from app.internal.utils.exceptions import GenerateSSHKeyPairException
+from app.internal.exceptions import GenerateSSHKeyPairException
 from .routers import ssh
 
 logging.basicConfig(
