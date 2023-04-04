@@ -23,7 +23,6 @@ def generate_ssh_key_pair() -> Any:
     ssh_key_path = path.expanduser("~/.ssh/id_rsa.pub")
     if Path(ssh_key_path).is_file():
         logging.error("SSH key already exists!")
-        # raise HTTPException(status_code=400, detail="SSH key already exists!")
         raise GenerateSSHKeyPairException(name="SSH key already exists!")
 
     ssh_path = path.expanduser("~/.ssh")
@@ -32,7 +31,6 @@ def generate_ssh_key_pair() -> Any:
 
     if not command_exists("ssh-keygen"):
         logging.error("ssh-keygen command not found!")
-        # raise HTTPException(status_code=400, detail="ssh-keygen command not found!")
         raise GenerateSSHKeyPairException(name="ssh-keygen command not found!")
 
     result = subprocess.run(
@@ -44,7 +42,6 @@ def generate_ssh_key_pair() -> Any:
 
     if result.returncode != 0:
         logging.error("SSH key generation failed!")
-        # raise HTTPException(status_code=400, detail="SSH key generation failed!")
         raise GenerateSSHKeyPairException(name="SSH key generation failed!")
 
     return StatusCheck(status="SSH key generated successfully!")
