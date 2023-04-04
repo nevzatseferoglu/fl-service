@@ -6,6 +6,7 @@ import logging
 
 from fastapi import APIRouter
 
+from app.internal.schemas.schema import RemoteMachine
 from app.internal.utils.ssh import command_exists
 from app.internal.schemas.schema import StatusCheck
 from app.internal.exceptions import (
@@ -17,6 +18,8 @@ router = APIRouter(
     prefix="/ssh",
     tags=["ssh"],
 )
+
+remote_machines: list[RemoteMachine] = []
 
 
 @router.post("/generate_ssh_key_pair")
@@ -51,8 +54,8 @@ def generate_ssh_key_pair() -> Any:
 
 
 @router.post("/copy_ssh_key_to_remote")
-def copy_ssh_key_to_remote() -> Any:
-    # TODO: Implement with https://github.com/paramiko/paramiko
+def copy_ssh_key_to_remote(machine: RemoteMachine) -> Any:
+    # TODO: Use subprocess.run() with input parameter to pass the password
     """Copies the SSH key to the remote host."""
 
     ssh_key_path = path.expanduser("~/.ssh/id_rsa.pub")
