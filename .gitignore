@@ -131,3 +131,6 @@ dmypy.json
 
 # Ignore intentionally 
 room/
+
+# ignore MAC DS_Store
+.DS_Store

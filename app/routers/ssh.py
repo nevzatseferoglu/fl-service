@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Annotated
 from os import path, makedirs
 import subprocess
 from pathlib import Path
 import logging
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 
 from app.internal.schemas.schema import RemoteMachine
 from app.internal.utils.ssh import command_exists
@@ -54,7 +54,7 @@ def generate_ssh_key_pair() -> Any:
 
 
 @router.post("/copy_ssh_key_to_remote")
-def copy_ssh_key_to_remote(machine: RemoteMachine) -> Any:
+def copy_ssh_key_to_remote(machine: Annotated[RemoteMachine, Body()]) -> Any:
     # TODO: Use subprocess.run() with input parameter to pass the password
     """Copies the SSH key to the remote host."""
 
@@ -66,3 +66,8 @@ def copy_ssh_key_to_remote(machine: RemoteMachine) -> Any:
     if not command_exists("ssh-copy-id"):
         logging.error("ssh-keygen command not found!")
         raise CopySSHKeyToRemoteException(name="ssh-copy-id command not found!")
+
+    cmd = f"ssh-copy-id {machine.ssh_username}@{machine.ip_address}"
+    subprocess.run(cmd, input=machine.ssh_password, shell=True)
+
+    
