@@ -1,18 +1,15 @@
-from typing import Any, Annotated
-from os import path, makedirs
-import subprocess
-from pathlib import Path
 import logging
+import subprocess
+from os import makedirs, path
+from pathlib import Path
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Body
 
-from app.internal.schemas.schema import RemoteMachine
+from app.internal.exceptions import (CopySSHKeyToRemoteException,
+                                     GenerateSSHKeyPairException)
+from app.internal.schemas.schema import RemoteMachine, StatusCheck
 from app.internal.utils.ssh import command_exists
-from app.internal.schemas.schema import StatusCheck
-from app.internal.exceptions import (
-    GenerateSSHKeyPairException,
-    CopySSHKeyToRemoteException,
-)
 
 router = APIRouter(
     prefix="/ssh",
@@ -20,7 +17,6 @@ router = APIRouter(
 )
 
 remote_machines: list[RemoteMachine] = []
-
 
 @router.post("/generate_ssh_key_pair")
 def generate_ssh_key_pair() -> Any:
@@ -53,7 +49,7 @@ def generate_ssh_key_pair() -> Any:
     return StatusCheck(status="SSH key generated successfully!")
 
 
-@router.post("/copy_ssh_key_to_remote")
+@router.post("/copy_ssh_key_to_remote_machine")
 def copy_ssh_key_to_remote(machine: Annotated[RemoteMachine, Body()]) -> Any:
     # TODO: Use subprocess.run() with input parameter to pass the password
     """Copies the SSH key to the remote host."""

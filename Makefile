@@ -36,6 +36,7 @@ kill:
 lint:
 	autoflake --in-place --remove-all-unused-imports --recursive .
 	black .
+	isort .
 
 # test:
 # 	${TEST_CMD}
