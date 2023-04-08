@@ -4,11 +4,12 @@ from os import makedirs, path
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Body
+import paramiko
+from fastapi import APIRouter, Body, status
 
 from app.internal.exceptions import (CopySSHKeyToRemoteException,
                                      GenerateSSHKeyPairException)
-from app.internal.schemas.schema import RemoteMachine, StatusCheck
+from app.internal.schemas.schema import RemoteMachine, Status, StatusType
 from app.internal.utils.ssh import command_exists
 
 router = APIRouter(
@@ -18,14 +19,17 @@ router = APIRouter(
 
 remote_machines: list[RemoteMachine] = []
 
-@router.post("/generate_ssh_key_pair")
+
+@router.post("/generate_ssh_key_pair", response_model=Status)
 def generate_ssh_key_pair() -> Any:
     """Generates an SSH key pair if one does not already exist."""
 
-    ssh_key_path = path.expanduser("~/.ssh/id_rsa.pub")
+    ssh_key_path = path.expanduser("~/.ssh/id_rsa")
     if Path(ssh_key_path).is_file():
         logging.error("SSH key already exists!")
-        raise GenerateSSHKeyPairException(name="SSH key already exists!")
+        raise GenerateSSHKeyPairException(
+            detail="SSH key already exists!", status_code=status.HTTP_400_BAD_REQUEST
+        )
 
     ssh_path = path.expanduser("~/.ssh")
     if not Path(ssh_path).is_dir():
@@ -33,37 +37,95 @@ def generate_ssh_key_pair() -> Any:
 
     if not command_exists("ssh-keygen"):
         logging.error("ssh-keygen command not found!")
-        raise GenerateSSHKeyPairException(name="ssh-keygen command not found!")
+        raise GenerateSSHKeyPairException(
+            detail="ssh-keygen command not found!",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     result = subprocess.run(
         ["ssh-keygen", "-t", "rsa", "-b", "4096", "-N", "", "-q", "-f", ssh_key_path],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
     )
 
     if result.returncode != 0:
-        logging.error("SSH key generation failed!")
-        raise GenerateSSHKeyPairException(name="SSH key generation failed!")
+        logging.error(f"SSH key generation failed: \n{result.stderr}")
+        raise GenerateSSHKeyPairException(
+            detail=f"SSH key generation failed: \n{result.stderr}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
-    return StatusCheck(status="SSH key generated successfully!")
+    logging.info("SSH key generated successfully!")
+    return Status(
+        status=StatusType.success, description="SSH key generated successfully!"
+    )
 
 
-@router.post("/copy_ssh_key_to_remote_machine")
+@router.post("/copy_ssh_key_to_remote_machine", response_model=Status)
 def copy_ssh_key_to_remote(machine: Annotated[RemoteMachine, Body()]) -> Any:
-    # TODO: Use subprocess.run() with input parameter to pass the password
+    # TODO: Convert into async function for the improving performance
     """Copies the SSH key to the remote host."""
 
-    ssh_key_path = path.expanduser("~/.ssh/id_rsa.pub")
-    if not Path(ssh_key_path).is_file():
-        logging.error("SSH key does not exist!")
-        raise CopySSHKeyToRemoteException(name="SSH key does not exist!")
+    ssh_pub_key_path = path.expanduser("~/.ssh/id_rsa.pub")
+    if not Path(ssh_pub_key_path).is_file():
+        logging.error("SSH public key does not exist!")
+        raise CopySSHKeyToRemoteException(
+            detail="SSH public key does not exist!",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
 
-    if not command_exists("ssh-copy-id"):
-        logging.error("ssh-keygen command not found!")
-        raise CopySSHKeyToRemoteException(name="ssh-copy-id command not found!")
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    cmd = f"ssh-copy-id {machine.ssh_username}@{machine.ip_address}"
-    subprocess.run(cmd, input=machine.ssh_password, shell=True)
+    try:
+        client.connect(
+            hostname=str(machine.ip_address),
+            username=machine.ssh_username,
+            password=machine.ssh_password,
+        )
 
-    
+        _, _, _ = client.exec_command("mkdir -p ~/.ssh")
+        _, _, _ = client.exec_command("touch ~/.ssh/authorized_keys")
+
+        with open(ssh_pub_key_path, "r") as f:
+            content = f.read()
+
+        _, _, _ = client.exec_command(
+            f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
+        )
+        client.close()
+
+    except paramiko.BadHostKeyException as e:
+        logging.error(f"Host key could not be verified: \n{e}")
+        client.close()
+        raise CopySSHKeyToRemoteException(
+            detail=f"Host key could not be verified: \n{e}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    except paramiko.AuthenticationException as e:
+        logging.error(f"Authentication failed: \n{e}")
+        client.close()
+        raise CopySSHKeyToRemoteException(
+            detail=f"Authentication failed: \n{e}",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+    except paramiko.SSHException as e:
+        logging.error(f"Error connecting to remote machine: \n{e}")
+        client.close()
+        raise CopySSHKeyToRemoteException(
+            detail=f"Error connecting to remote machine: \n{e}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    except Exception as e:
+        logging.error(f"Unknown error: \n{e}")
+        client.close()
+        raise CopySSHKeyToRemoteException(
+            detail=f"Unknown error: \n{e}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    logging.info("SSH key copied to remote machine successfully!")
+    return Status(
+        status=StatusType.success,
+        description="SSH key copied to remote machine successfully!",
+    )

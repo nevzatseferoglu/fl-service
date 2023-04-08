@@ -3,10 +3,18 @@ from enum import Enum
 from pydantic import BaseModel, IPvAnyAddress
 
 
-class StatusCheck(BaseModel):
+class StatusType(str, Enum):
+    """Status type"""
+
+    success = "success"
+    error = "error"
+
+
+class Status(BaseModel):
     """Status check"""
 
-    status: str
+    status: StatusType
+    description: str | None = None
 
 
 class Architecture(str, Enum):
@@ -52,4 +60,4 @@ class RemoteMachine(BaseModel):
     ssh_password: str | None = None
     ssh_key: str | None = None
     ssh_key_passphrase: str | None = None
-    descriotion: str | None = None
+    description: str | None = None
