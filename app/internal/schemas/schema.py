@@ -1,13 +1,6 @@
-from enum import Enum
-
 from pydantic import BaseModel, IPvAnyAddress
 
-
-class StatusType(str, Enum):
-    """Status type"""
-
-    success = "success"
-    error = "error"
+from ..utils.enums import Architecture, OsType, StatusType
 
 
 class Status(BaseModel):
@@ -17,47 +10,53 @@ class Status(BaseModel):
     description: str | None = None
 
 
-class Architecture(str, Enum):
-    """Architecture type"""
+class RemoteMachineBase(BaseModel):
+    """Remote machine to connect to"""
 
-    x86 = "x86"
-    x64 = "x64"
-    arm = "arm"
-    arm64 = "arm64"
+    contanct_info: int
+    description: str | None = None
 
 
-class OsType(str, Enum):
-    """Operating system type"""
+class RemoteMachineCreate(RemoteMachineBase):
+    """Remote machine to connect to"""
 
-    linux = "linux"
-    windows = "windows"
-    macos = "macos"
-    raspberry_pi = "raspberry_pi"
-    android = "android"
-    ios = "ios"
-    freebsd = "freebsd"
-    netbsd = "netbsd"
-    openbsd = "openbsd"
+    os_type: OsType
+    ip_address: IPvAnyAddress
+    ssh_username: str
+    ssh_password: str | None = ""
+    ssh_port: int | None = 22
+    ssh_key: str | None = None
+    ssh_key_passphrase: str | None = None
 
 
-class OS(BaseModel):
+class RemoteMachine(RemoteMachineCreate):
+    """Remote machine to connect to"""
+
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class OSBase(BaseModel):
     """Operating system"""
 
-    type_os: OsType
+    os_type: OsType
+
+
+class OSCreate(OSBase):
+    """Operating system"""
+
     name: str | None = None
     arch: Architecture | None = None
     version: str | None = None
     description: str | None = None
 
 
-class RemoteMachine(BaseModel):
-    """Remote machine to connect to"""
+class OS(OSCreate):
+    """Operating system"""
 
-    os: OS
-    ip_address: IPvAnyAddress
-    ssh_port: int | None = 22
-    ssh_username: str
-    ssh_password: str | None = None
-    ssh_key: str | None = None
-    ssh_key_passphrase: str | None = None
-    description: str | None = None
+    machines: list[RemoteMachine] = []
+
+    class Config:
+        orm_mode = True
