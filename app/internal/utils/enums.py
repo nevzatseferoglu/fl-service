@@ -8,15 +8,6 @@ class StatusType(str, Enum):
     error = "error"
 
 
-class Architecture(str, Enum):
-    """Architecture type"""
-
-    x86 = "x86"
-    x64 = "x64"
-    arm = "arm"
-    arm64 = "arm64"
-
-
 class OsType(str, Enum):
     """Operating system type"""
 

@@ -9,7 +9,7 @@ from fastapi import APIRouter, Body, status
 
 from app.internal.exceptions import (CopySSHKeyToRemoteException,
                                      GenerateSSHKeyPairException)
-from app.internal.schemas.schema import RemoteMachine, Status, StatusType
+from app.internal.schemas import RemoteMachine, Status, StatusType
 from app.internal.utils.ssh import command_exists
 
 router = APIRouter(
