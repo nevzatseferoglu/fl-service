@@ -134,3 +134,7 @@ room/
 
 # ignore MAC DS_Store
 .DS_Store
+
+# ignore sqlite
+*.sqlite3
+sql_app.db

@@ -13,14 +13,14 @@ class Status(BaseModel):
 class RemoteMachineBase(BaseModel):
     """Remote machine to connect to"""
 
-    contanct_info: int
+    contact_info: str
+    ip_address: IPvAnyAddress
     description: str | None = None
 
 
 class RemoteMachineCreate(RemoteMachineBase):
     """Remote machine to connect to"""
 
-    ip_address: IPvAnyAddress
     ssh_username: str
     ssh_password: str | None = ""
 
@@ -32,7 +32,7 @@ class RemoteMachineCreate(RemoteMachineBase):
     ssh_key_passphrase: str | None = None
 
 
-class RemoteMachine(RemoteMachineCreate):
+class RemoteMachine(RemoteMachineBase):
     """Remote machine to connect to"""
 
     id: int

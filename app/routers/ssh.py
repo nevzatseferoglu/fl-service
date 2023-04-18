@@ -5,19 +5,18 @@ from pathlib import Path
 from typing import Annotated, Any
 
 import paramiko
-from fastapi import APIRouter, Body, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
-from app.internal.exceptions import (CopySSHKeyToRemoteException,
-                                     GenerateSSHKeyPairException)
-from app.internal.schemas import RemoteMachine, Status, StatusType
+from app.internal.schemas import RemoteMachineCreate, Status, StatusType
+from app.internal.sql import crud
 from app.internal.utils.ssh import command_exists
+from app.routers.database import get_db
 
 router = APIRouter(
     prefix="/ssh",
     tags=["ssh"],
 )
-
-remote_machines: list[RemoteMachine] = []
 
 
 @router.post("/generate_ssh_key_pair", response_model=Status)
@@ -26,19 +25,19 @@ def generate_ssh_key_pair() -> Any:
 
     ssh_key_path = path.expanduser("~/.ssh/id_rsa")
     if Path(ssh_key_path).is_file():
-        logging.error("SSH key already exists!")
-        raise GenerateSSHKeyPairException(
-            detail="SSH key already exists!", status_code=status.HTTP_400_BAD_REQUEST
-        )
+        err = "SSH key already exists!"
+        logging.error(err)
+        raise HTTPException(detail=err, status_code=status.HTTP_400_BAD_REQUEST)
 
     ssh_path = path.expanduser("~/.ssh")
     if not Path(ssh_path).is_dir():
         makedirs("~/.ssh", mode=700, exist_ok=True)
 
     if not command_exists("ssh-keygen"):
-        logging.error("ssh-keygen command not found!")
-        raise GenerateSSHKeyPairException(
-            detail="ssh-keygen command not found!",
+        err = "ssh-keygen command not found!"
+        logging.error(err)
+        raise HTTPException(
+            detail=err,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
@@ -49,9 +48,10 @@ def generate_ssh_key_pair() -> Any:
     )
 
     if result.returncode != 0:
-        logging.error(f"SSH key generation failed: \n{result.stderr}")
-        raise GenerateSSHKeyPairException(
-            detail=f"SSH key generation failed: \n{result.stderr}",
+        err = f"SSH key generation failed: \n{result.stderr}"
+        logging.error(err)
+        raise HTTPException(
+            detail=err,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
@@ -62,26 +62,30 @@ def generate_ssh_key_pair() -> Any:
 
 
 @router.post("/copy_ssh_key_to_remote_machine", response_model=Status)
-def copy_ssh_key_to_remote(machine: Annotated[RemoteMachine, Body()]) -> Any:
+def copy_ssh_key_to_remote(
+    machine: Annotated[RemoteMachineCreate, Body()], db: Session = Depends(get_db)
+) -> Any:
     # TODO: Convert into async function for the improving performance
     """Copies the SSH key to the remote host."""
 
     ssh_pub_key_path = path.expanduser("~/.ssh/id_rsa.pub")
     if not Path(ssh_pub_key_path).is_file():
-        logging.error("SSH public key does not exist!")
-        raise CopySSHKeyToRemoteException(
-            detail="SSH public key does not exist!",
+        err = "SSH public key does not exist!"
+        logging.error(err)
+        raise HTTPException(
+            detail=err,
             status_code=status.HTTP_400_BAD_REQUEST,
         )
 
     client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
             hostname=str(machine.ip_address),
             username=machine.ssh_username,
             password=machine.ssh_password,
+            port=machine.ssh_port,
         )
 
         _, _, _ = client.exec_command("mkdir -p ~/.ssh")
@@ -93,39 +97,56 @@ def copy_ssh_key_to_remote(machine: Annotated[RemoteMachine, Body()]) -> Any:
         _, _, _ = client.exec_command(
             f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
         )
-        client.close()
+
+        if crud.register_remote_machine(db=db, remote_machine=machine) == None:
+            err = "Given machine cannot be registered"
+            logging.error(err)
+            raise HTTPException(
+                detail=err,
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        logging.info("SSH key copied to remote machine successfully!")
+        return Status(
+            status=StatusType.success,
+            description="SSH key copied to remote machine successfully!",
+        )
 
     except paramiko.BadHostKeyException as e:
-        logging.error(f"Host key could not be verified: \n{e}")
-        client.close()
-        raise CopySSHKeyToRemoteException(
-            detail=f"Host key could not be verified: \n{e}",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-    except paramiko.AuthenticationException as e:
-        logging.error(f"Authentication failed: \n{e}")
-        client.close()
-        raise CopySSHKeyToRemoteException(
-            detail=f"Authentication failed: \n{e}",
-            status_code=status.HTTP_401_UNAUTHORIZED,
-        )
-    except paramiko.SSHException as e:
-        logging.error(f"Error connecting to remote machine: \n{e}")
-        client.close()
-        raise CopySSHKeyToRemoteException(
-            detail=f"Error connecting to remote machine: \n{e}",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-    except Exception as e:
-        logging.error(f"Unknown error: \n{e}")
-        client.close()
-        raise CopySSHKeyToRemoteException(
-            detail=f"Unknown error: \n{e}",
+        err = f"Host key could not be verified: \n{e}"
+        logging.error(err)
+        raise HTTPException(
+            detail=err,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-    logging.info("SSH key copied to remote machine successfully!")
-    return Status(
-        status=StatusType.success,
-        description="SSH key copied to remote machine successfully!",
-    )
+    except paramiko.AuthenticationException as e:
+        err = f"Authentication failed: \n{e}"
+        logging.error(err)
+        raise HTTPException(
+            detail=err,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    except paramiko.SSHException as e:
+        err = f"SSH connection failed: \n{e}"
+        logging.error(err)
+        raise HTTPException(
+            detail=err,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    except HTTPException as e:
+        # intentionally to avoid double logging
+        raise e
+
+    except Exception as e:
+        err = f"Unknown error: \n{e}"
+        logging.error(err)
+        raise HTTPException(
+            detail=err,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    finally:
+        client.close()

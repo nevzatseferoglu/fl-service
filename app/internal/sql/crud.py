@@ -1,6 +1,5 @@
-import logging
-
-from sqlalchemy.exc import DBAPIError, SQLAlchemyError
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from .. import schemas
@@ -9,6 +8,7 @@ from . import models
 
 
 def get_remote_machine(db: Session, remote_machine_id: int) -> models.RemoteMachine:
+    # TODO: Add exception handling
     """Returns a remote machine with the given id"""
 
     return (
@@ -21,6 +21,7 @@ def get_remote_machine(db: Session, remote_machine_id: int) -> models.RemoteMach
 def get_remote_machines_by_contact_info(
     db: Session, contact_info: str
 ) -> list[models.RemoteMachine]:
+    # TODO: Add exception handling
     """Returns a list of remote machines that have the given contact info"""
 
     return (
@@ -30,65 +31,91 @@ def get_remote_machines_by_contact_info(
     )
 
 
-def get_remote_machine_by_ip_address(
-    db: Session, ip_address: str
-) -> models.RemoteMachine:
-    """Returns a remote machine with the given ip address"""
-
-    return (
-        db.query(models.RemoteMachine)
-        .filter(models.RemoteMachine.ip_address == ip_address)
-        .first()
-    )
-
-
 def get_remote_machines(
     db: Session, skip: int = 0, limit: int = 100
 ) -> list[models.RemoteMachine]:
     # TODO: Add sorting logic so that the returned list is sorted in a predictable order
+    # TODO: Add exception handling
     """Returns a list of remote machines"""
 
     return db.query(models.RemoteMachine).offset(skip).limit(limit).all()
 
 
-def create_remote_machine(
+def get_remote_machine_by_ip_address(
+    db: Session, ip_address: str
+) -> models.RemoteMachine:
+    """Returns a remote machine with the given ip address"""
+
+    try:
+        return (
+            db.query(models.RemoteMachine)
+            .filter(str(models.RemoteMachine.ip_address) == ip_address)
+            .first()
+        )
+    except SQLAlchemyError as e:
+        err = (
+            f"SQLAlchemy error occurred while getting remote machine by ip address: {e}"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
+        )
+
+
+def register_remote_machine(
     db: Session, remote_machine: schemas.RemoteMachineCreate
-) -> tuple[models.RemoteMachine, str]:
+) -> models.RemoteMachine:
     # TODO ip_address can be used as a unique identifier (primary key)
     """Creates a new remote machine"""
 
     try:
         # only linux is supported for now
         if remote_machine.os_type != OsType.linux:
-            err = f"Invalid os_type! (os_type: {remote_machine.os_type})"
-            logging.error(err)
-            return None, err
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid os_type! (os_type: {remote_machine.os_type})",
+            )
 
+        # ensure that the remote machine doesn't already exist
         if get_remote_machine_by_ip_address(db, remote_machine.ip_address) != None:
-            err = f"Remote machine with the given ip address already exists! (ip_address: {remote_machine.ip_address})"
-            logging.error(err)
-            return None, err
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Remote machine with the given IP address already exists",
+            )
 
-        db_remote_machine = models.RemoteMachine(**remote_machine.dict())
+        # TODO prevent explicit convertion to string
+        db_remote_machine = models.RemoteMachine(
+            **remote_machine.dict(exclude={"ip_address"}),
+            ip_address=str(remote_machine.ip_address),
+        )
+
         db.add(db_remote_machine)
         db.commit()
         db.refresh(db_remote_machine)
         return db_remote_machine
 
-    except DBAPIError as e:
-        err = f"An error occurred while creating remote machine: {e.orig.args}"
-        logging.error(err)
+    except IntegrityError as e:
         db.rollback()
-        return None, err
+        if "UNIQUE constraint failed" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Remote machine with the given IP address already exists",
+            )
+        else:
+            err = f"IntegrityError occurred while creating remote machine: {e}"
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
+            )
 
     except SQLAlchemyError as e:
-        err = f"An error occurred while creating remote machine: {e}"
-        logging.error(err)
         db.rollback()
-        return None, err
+        err = f"SQLAlchemyError occurred while creating remote machine: {e}"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
+        )
 
     except Exception as e:
-        err = f"An unknown error occurred while creating remote machine: {e}"
-        logging.error(err)
         db.rollback()
-        return None, err
+        err = f"Unknown error occurred while creating remote machine: {e}"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
+        )

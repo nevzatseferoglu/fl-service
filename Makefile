@@ -16,10 +16,11 @@ LOG_LEVEL = --log-level debug
 # $(LOG_LEVEL)
 
 run:
-	uvicorn ${START_DIR}.${START_FASTAPI_SOURCE}:${VAR_NAME} --reload --port ${PORT} 
+	uvicorn ${START_DIR}.${START_FASTAPI_SOURCE}:${VAR_NAME} --host 0.0.0.0 --reload --port ${PORT} 
 
 kill:
 	ps aux | grep uvicorn | grep -v grep | awk '{print $$2}' | xargs kill -SIGINT
+	rm sql_app.db 
 
 # docker-build:
 # 	docker build -t ${DOCKER_IMAGE_NAME} .
