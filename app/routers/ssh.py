@@ -21,13 +21,13 @@ router = APIRouter(
 
 @router.post("/generate_ssh_key_pair", response_model=Status)
 def generate_ssh_key_pair() -> Any:
-    """Generates an SSH key pair if one does not already exist."""
+    """Generate SSH key pair for the server."""
 
     ssh_key_path = path.expanduser("~/.ssh/id_rsa")
     if Path(ssh_key_path).is_file():
         err = "SSH key already exists!"
         logging.error(err)
-        raise HTTPException(detail=err, status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=err)
 
     ssh_path = path.expanduser("~/.ssh")
     if not Path(ssh_path).is_dir():
@@ -37,8 +37,8 @@ def generate_ssh_key_pair() -> Any:
         err = "ssh-keygen command not found!"
         logging.error(err)
         raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=err,
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     result = subprocess.run(
@@ -51,8 +51,8 @@ def generate_ssh_key_pair() -> Any:
         err = f"SSH key generation failed: \n{result.stderr}"
         logging.error(err)
         raise HTTPException(
-            detail=err,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=err,
         )
 
     logging.info("SSH key generated successfully!")
@@ -73,8 +73,8 @@ def copy_ssh_key_to_remote(
         err = "SSH public key does not exist!"
         logging.error(err)
         raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=err,
-            status_code=status.HTTP_400_BAD_REQUEST,
         )
 
     client = paramiko.SSHClient()
@@ -98,13 +98,7 @@ def copy_ssh_key_to_remote(
             f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
         )
 
-        if crud.register_remote_machine(db=db, remote_machine=machine) == None:
-            err = "Given machine cannot be registered"
-            logging.error(err)
-            raise HTTPException(
-                detail=err,
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        crud.register_remote_machine(db=db, remote_machine=machine)
 
         logging.info("SSH key copied to remote machine successfully!")
         return Status(
@@ -116,27 +110,28 @@ def copy_ssh_key_to_remote(
         err = f"Host key could not be verified: \n{e}"
         logging.error(err)
         raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=err,
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     except paramiko.AuthenticationException as e:
         err = f"Authentication failed: \n{e}"
         logging.error(err)
         raise HTTPException(
-            detail=err,
             status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=err,
         )
 
     except paramiko.SSHException as e:
         err = f"SSH connection failed: \n{e}"
         logging.error(err)
         raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=err,
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     except HTTPException as e:
+        logging.error(e.detail)
         # intentionally to avoid double logging
         raise e
 
@@ -144,8 +139,8 @@ def copy_ssh_key_to_remote(
         err = f"Unknown error: \n{e}"
         logging.error(err)
         raise HTTPException(
-            detail=err,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=err,
         )
 
     finally:

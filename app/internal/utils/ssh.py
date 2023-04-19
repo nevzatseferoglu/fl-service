@@ -7,6 +7,7 @@ def command_exists(cmd: str) -> bool:
     """
     Check if a command exists in the system path.
     """
+
     try:
         if os.name == "nt":
             # On Windows, use the 'where' command to find the executable.
@@ -19,4 +20,5 @@ def command_exists(cmd: str) -> bool:
     except subprocess.CalledProcessError or subprocess.TimeoutExpired as e:
         logging.warning(f"Exception while checking if command {cmd} exists: {e}")
         return False
-    return result.returncode == 0
+    else:
+        return result.returncode == 0

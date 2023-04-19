@@ -61,9 +61,7 @@ def get_remote_machine_by_ip_address(
         )
 
 
-def register_remote_machine(
-    db: Session, remote_machine: schemas.RemoteMachineCreate
-) -> models.RemoteMachine:
+def register_remote_machine(db: Session, remote_machine: schemas.RemoteMachineCreate):
     # TODO ip_address can be used as a unique identifier (primary key)
     """Creates a new remote machine"""
 
@@ -91,7 +89,6 @@ def register_remote_machine(
         db.add(db_remote_machine)
         db.commit()
         db.refresh(db_remote_machine)
-        return db_remote_machine
 
     except IntegrityError as e:
         db.rollback()
