@@ -2,43 +2,45 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from .. import schemas
-from ..utils.enums import OsType
+from .. import schema
+from ..utils.enum import OsType
+from ..utils.validator import validate_ip_address
 from . import models
 
-
-def get_remote_machine(db: Session, remote_machine_id: int) -> models.RemoteMachine:
-    # TODO: Add exception handling
-    """Returns a remote machine with the given id"""
-
-    return (
-        db.query(models.RemoteMachine)
-        .filter(models.RemoteMachine.id == remote_machine_id)
-        .first()
-    )
+# NOTE: Don't use logging in crud functions. Instead, use logging in the calling function.
 
 
 def get_remote_machines_by_contact_info(
     db: Session, contact_info: str
 ) -> list[models.RemoteMachine]:
-    # TODO: Add exception handling
     """Returns a list of remote machines that have the given contact info"""
 
-    return (
-        db.query(models.RemoteMachine)
-        .filter(models.RemoteMachine.contact_info == contact_info)
-        .all()
-    )
+    try:
+        return (
+            db.query(models.RemoteMachine)
+            .filter(models.RemoteMachine.contact_info == contact_info)
+            .all()
+        )
+    except SQLAlchemyError as e:
+        err = f"SQLAlchemy error occurred while getting remote machines by contact info: {e}"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
+        )
 
 
 def get_remote_machines(
     db: Session, skip: int = 0, limit: int = 100
 ) -> list[models.RemoteMachine]:
-    # TODO: Add sorting logic so that the returned list is sorted in a predictable order
-    # TODO: Add exception handling
     """Returns a list of remote machines"""
+    # TODO: Add sorting logic so that the returned list is sorted in a predictable order
 
-    return db.query(models.RemoteMachine).offset(skip).limit(limit).all()
+    try:
+        return db.query(models.RemoteMachine).offset(skip).limit(limit).all()
+    except SQLAlchemyError as e:
+        err = f"SQLAlchemy error occurred while getting remote machines: {e}"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
+        )
 
 
 def get_remote_machine_by_ip_address(
@@ -49,7 +51,7 @@ def get_remote_machine_by_ip_address(
     try:
         return (
             db.query(models.RemoteMachine)
-            .filter(str(models.RemoteMachine.ip_address) == ip_address)
+            .filter(models.RemoteMachine.ip_address == ip_address)
             .first()
         )
     except SQLAlchemyError as e:
@@ -61,18 +63,23 @@ def get_remote_machine_by_ip_address(
         )
 
 
-def register_remote_machine(db: Session, remote_machine: schemas.RemoteMachineCreate):
-    # TODO ip_address can be used as a unique identifier (primary key)
+def register_remote_machine(db: Session, remote_machine: schema.RemoteMachineCreate):
     """Creates a new remote machine"""
 
-    try:
-        # only linux is supported for now
-        if remote_machine.os_type != OsType.linux:
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid os_type! (os_type: {remote_machine.os_type})",
-            )
+    # only linux is supported for now
+    if remote_machine.os_type != OsType.linux:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid os_type! (os_type: {remote_machine.os_type})",
+        )
 
+    if validate_ip_address(remote_machine.ip_address) == False:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid IP address! (ip_address: {remote_machine.ip_address})",
+        )
+
+    try:
         # ensure that the remote machine doesn't already exist
         if get_remote_machine_by_ip_address(db, remote_machine.ip_address) != None:
             raise HTTPException(
@@ -81,10 +88,7 @@ def register_remote_machine(db: Session, remote_machine: schemas.RemoteMachineCr
             )
 
         # TODO prevent explicit convertion to string
-        db_remote_machine = models.RemoteMachine(
-            **remote_machine.dict(exclude={"ip_address"}),
-            ip_address=str(remote_machine.ip_address),
-        )
+        db_remote_machine = models.RemoteMachine(**remote_machine.dict())
 
         db.add(db_remote_machine)
         db.commit()
@@ -109,6 +113,10 @@ def register_remote_machine(db: Session, remote_machine: schemas.RemoteMachineCr
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
         )
+
+    except HTTPException as e:
+        # intentionally to avoid double logging
+        raise e
 
     except Exception as e:
         db.rollback()

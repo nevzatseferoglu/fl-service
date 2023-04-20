@@ -8,9 +8,10 @@ import paramiko
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.internal.schemas import RemoteMachineCreate, Status, StatusType
+from app.internal.schema import RemoteMachineCreate, Status, StatusType
 from app.internal.sql import crud
 from app.internal.utils.ssh import command_exists
+from app.internal.utils.validator import validate_ip_address
 from app.routers.database import get_db
 
 router = APIRouter(
@@ -66,7 +67,14 @@ def copy_ssh_key_to_remote(
     machine: Annotated[RemoteMachineCreate, Body()], db: Session = Depends(get_db)
 ) -> Any:
     # TODO: Convert into async function for the improving performance
+    # TODO: Make a batch operation for bunch of operations (important)
+
     """Copies the SSH key to the remote host."""
+
+    if validate_ip_address(machine.ip_address) == False:
+        err = f"Invalid IP address: {machine.ip_address}"
+        logging.error(err)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
 
     ssh_pub_key_path = path.expanduser("~/.ssh/id_rsa.pub")
     if not Path(ssh_pub_key_path).is_file():
@@ -80,9 +88,11 @@ def copy_ssh_key_to_remote(
     client = paramiko.SSHClient()
 
     try:
+        crud.register_remote_machine(db=db, remote_machine=machine)
+
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
-            hostname=str(machine.ip_address),
+            hostname=machine.ip_address,
             username=machine.ssh_username,
             password=machine.ssh_password,
             port=machine.ssh_port,
@@ -97,8 +107,6 @@ def copy_ssh_key_to_remote(
         _, _, _ = client.exec_command(
             f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
         )
-
-        crud.register_remote_machine(db=db, remote_machine=machine)
 
         logging.info("SSH key copied to remote machine successfully!")
         return Status(

@@ -1,6 +1,6 @@
-from pydantic import BaseModel, IPvAnyAddress
+from pydantic import BaseModel
 
-from .utils.enums import OsType, StatusType
+from .utils.enum import OsType, StatusType
 
 
 class Status(BaseModel):
@@ -14,7 +14,7 @@ class RemoteMachineBase(BaseModel):
     """Remote machine to connect to"""
 
     contact_info: str
-    ip_address: IPvAnyAddress
+    ip_address: str
     description: str | None = None
 
 
