@@ -20,3 +20,10 @@ class OsType(str, Enum):
     freebsd = "freebsd"
     netbsd = "netbsd"
     openbsd = "openbsd"
+
+
+class FlowerType(str, Enum):
+    """Flower component type"""
+
+    server = "server"
+    client = "client"

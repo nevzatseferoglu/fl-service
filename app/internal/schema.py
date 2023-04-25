@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from .utils.enum import OsType, StatusType
+from .utils.enum import FlowerType, OsType, StatusType
 
 
 class Status(BaseModel):
@@ -21,6 +21,7 @@ class RemoteMachineBase(BaseModel):
 class RemoteMachineCreate(RemoteMachineBase):
     """Remote machine to connect to"""
 
+    flower_type: FlowerType
     ssh_username: str
     ssh_password: str | None = ""
 
