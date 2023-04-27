@@ -1,0 +1,13 @@
+# code: language=ansible
+
+all:
+  children:
+    flower_server:
+      hosts:
+        machine1_nevzat:
+          ansible_host: 172.144.12.22
+          ansible_user: dummy_username
+    flower_clients:
+      hosts: null
+  vars:
+    ansible_connection: ssh

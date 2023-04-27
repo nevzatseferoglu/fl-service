@@ -7,4 +7,3 @@ flower-server:
       ansible_host: 192.168.1.105
   vars:
     ansible_connection: ssh
-

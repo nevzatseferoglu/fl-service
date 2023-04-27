@@ -1,0 +1,24 @@
+# note: this is a Dockerfile for testing purposes only
+
+FROM alpine:latest
+
+RUN apk update && \
+    apk add --no-cache \
+        openssh \
+        bash \
+        ip6tables \
+        iptables \
+        curl \
+        git \
+        jq \
+        openssh-client \
+        python3 && \
+    apk add -u awall && \
+    ssh-keygen -A
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 22
+
+ENTRYPOINT ["/entrypoint.sh"]

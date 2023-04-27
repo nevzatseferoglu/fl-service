@@ -8,6 +8,7 @@ import paramiko
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.ansible.inventory import dynamic_inventory
 from app.internal.schema import RemoteMachineCreate, Status, StatusType
 from app.internal.sql import crud
 from app.internal.utils.ssh import command_exists
@@ -88,8 +89,6 @@ def copy_ssh_key_to_remote(
     client = paramiko.SSHClient()
 
     try:
-        crud.register_remote_machine(db=db, remote_machine=machine)
-
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
             hostname=machine.ip_address,
@@ -106,6 +105,16 @@ def copy_ssh_key_to_remote(
 
         _, _, _ = client.exec_command(
             f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
+        )
+
+        crud.register_remote_machine(db=db, remote_machine=machine)
+
+        dynamic_inventory.add_new_host_to_flower_inventory(
+            machine_identifier="",
+            ansible_host=machine.ip_address,
+            ansible_user=machine.ssh_username,
+            flower_type=machine.flower_type,
+            db=db,
         )
 
         logging.info("SSH key copied to remote machine successfully!")
