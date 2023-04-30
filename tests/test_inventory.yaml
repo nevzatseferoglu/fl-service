@@ -4,9 +4,9 @@ all:
   children:
     flower_server:
       hosts:
-        machine1_nevzat:
-          ansible_host: 172.144.12.22
-          ansible_user: dummy_username
+        dummy:
+          ansible_host: 192.168.1.105
+          ansible_user: ubuntu
     flower_clients:
       hosts: null
   vars:

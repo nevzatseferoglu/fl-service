@@ -1,46 +1,28 @@
 import logging
-from os import linesep
-from pathlib import Path
 
-import yaml
 from fastapi import Depends
-from pytest import Session
+from sqlalchemy.orm import Session
 
-from ...internal.schema import FlowerType
 from ...internal.sql.crud import get_remote_machine_by_ip_address
+from ...internal.utils.ansible import ansible_export_to_yaml
+from ...internal.utils.enum import FlowerType
 from ...internal.utils.validator import validate_ip_address
 from ...routers.database import get_db
+
+FLOWER_SERVER_GROUP = "flower_server"
+FLOWER_CLIENTS_GROUP = "flower_clients"
 
 FLOWER_INVENTORY = {
     "all": {
         "children": {
-            "flower_server": {"hosts": None},
-            "flower_clients": {"hosts": None},
+            FLOWER_SERVER_GROUP: {"hosts": None},
+            FLOWER_CLIENTS_GROUP: {"hosts": None},
         },
         "vars": {
             "ansible_connection": "ssh",
         },
     }
 }
-
-
-def ansible_export_to_yaml(dictionary: dict, file_name: str):
-    """Export a dictionary to a yaml file"""
-
-    file_path = Path(file_name)
-
-    # Create the directory if it does not exist
-    if not file_path.parent.exists():
-        file_path.parent.mkdir(parents=True, exist_ok=True)
-
-    try:
-        with file_path.open("w") as yaml_file:
-            yaml_file.write("# code: language=ansible")
-            yaml_file.write(2 * linesep)
-            yaml.dump(dictionary, yaml_file, default_flow_style=False, sort_keys=False)
-        logging.info(f"Successfully exported dictionary to {file_name}")
-    except IOError as e:
-        logging.error(f"Failed to export dictionary to {file_name} as a yaml file, {e}")
 
 
 def add_new_host_to_flower_inventory(
@@ -67,22 +49,25 @@ def add_new_host_to_flower_inventory(
 
         if flower_type == FlowerType.client:
             empty = (
-                FLOWER_INVENTORY["all"]["children"]["flower_clients"]["hosts"] == None
+                FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"]
+                == None
             )
 
             if (
                 not empty
                 and identifier
-                in FLOWER_INVENTORY["all"]["children"]["flower_clients"]["hosts"].keys()
+                in FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP][
+                    "hosts"
+                ].keys()
             ):
                 raise Exception(
                     f"Flower client host {ansible_host} already exists in the inventory"
                 )
 
             if empty:
-                FLOWER_INVENTORY["all"]["children"]["flower_clients"]["hosts"] = {}
+                FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"] = {}
 
-            FLOWER_INVENTORY["all"]["children"]["flower_clients"]["hosts"][
+            FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"][
                 identifier
             ] = {
                 "ansible_host": ansible_host,
@@ -90,26 +75,31 @@ def add_new_host_to_flower_inventory(
             }
         else:
             empty = (
-                FLOWER_INVENTORY["all"]["children"]["flower_server"]["hosts"] == None
+                FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"]
+                == None
             )
 
             if (
                 not empty
                 and identifier
-                in FLOWER_INVENTORY["all"]["children"]["flower_server"]["hosts"].keys()
+                in FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP][
+                    "hosts"
+                ].keys()
             ):
                 raise Exception(
                     f"Flower server host {ansible_host} already exists in the inventory"
                 )
 
             if empty:
-                FLOWER_INVENTORY["all"]["children"]["flower_server"]["hosts"] = {}
+                FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"] = {}
 
-            FLOWER_INVENTORY["all"]["children"]["flower_server"]["hosts"][
+            FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"][
                 identifier
             ] = {"ansible_host": ansible_host, "ansible_user": ansible_user}
 
-        ansible_export_to_yaml(FLOWER_INVENTORY, "flower_inventory.yaml")
+        ansible_export_to_yaml(
+            FLOWER_INVENTORY, "./app/ansible/inventory/flower_inventory.yaml"
+        )
 
     except Exception as e:
         logging.error("Exeption occured in add_new_host_to_flower_inventory")

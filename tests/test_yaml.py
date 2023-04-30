@@ -1,21 +1,82 @@
 import os
 import sys
 
-# Get the parent directory of the current file (i.e. the "tests" directory)
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-# Add the parent directory to the Python path
-sys.path.append(parent_dir)
+from app.internal.utils.ansible import ansible_export_to_yaml
+from app.internal.utils.enum import FlowerType
 
-import app.ansible.inventory.dynamic_inventory as dy
+FLOWER_SERVER_GROUP = "flower_server"
+FLOWER_CLIENTS_GROUP = "flower_clients"
+
+FLOWER_INVENTORY = {
+    "all": {
+        "children": {
+            FLOWER_SERVER_GROUP: {"hosts": None},
+            FLOWER_CLIENTS_GROUP: {"hosts": None},
+        },
+        "vars": {
+            "ansible_connection": "ssh",
+        },
+    }
+}
 
 
 def test_export_to_yaml():
-    try:
-        dy.add_new_host_to_flower_inventory(
-            "nevzat", "172.144.12.22", "dummy_username", False
+    ansible_host = "dummy_host"
+    ansible_user = "dummy_user"
+    identifier = "dummy"
+    flower_type = "client"
+
+    if flower_type == FlowerType.client:
+        empty = (
+            FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"] == None
         )
-        dy.export_to_yaml(dy.FLOWER_INVENTORY, "test_inventory.yaml")
+
+        if (
+            not empty
+            and identifier
+            in FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"].keys()
+        ):
+            raise Exception(
+                f"Flower client host {ansible_host} already exists in the inventory"
+            )
+
+        if empty:
+            FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"] = {}
+
+        FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"][
+            identifier
+        ] = {
+            "ansible_host": ansible_host,
+            "ansible_user": ansible_user,
+        }
+    else:
+        empty = (
+            FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"] == None
+        )
+
+        if (
+            not empty
+            and identifier
+            in FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"].keys()
+        ):
+            raise Exception(
+                f"Flower server host {ansible_host} already exists in the inventory"
+            )
+
+        if empty:
+            FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"] = {}
+
+        FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"][
+            identifier
+        ] = {"ansible_host": ansible_host, "ansible_user": ansible_user}
+
+    try:
+        ansible_export_to_yaml(
+            dict=FLOWER_INVENTORY, file_name="dummy.yaml", is_playbook=True
+        )
     except Exception as e:
         raise e
     else:

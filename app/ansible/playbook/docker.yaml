@@ -1,21 +1,20 @@
----
-- name: Install docker runtime to remote machines
-- hosts: remotemachines
+- name: Install ansible
+  hosts: all
   become: true
   vars:
-    container_count: 4
-    default_container_name: docker
-    default_container_image: ubuntu
-    default_container_command: sleep 1
+    default_container_name: hello-world-test-container
+    default_container_image: hello-world
+    ansible_timeout: 2 * 60 # 2 minutes
+
   tasks:
     - name: Install aptitude
-      apt:
+      ansible.builtin.apt:
         name: aptitude
         state: present
         update_cache: true
 
     - name: Install required system packages
-      apt:
+      ansible.builtin.apt:
         pkg:
           - apt-transport-https
           - ca-certificates
@@ -24,25 +23,25 @@
           - python3-pip
           - virtualenv
           - python3-setuptools
-        state: latest
+        state: present
         update_cache: true
 
     - name: Add Docker GPG apt Key
-      apt_key:
+      ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
     - name: Add Docker Repository
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: deb https://download.docker.com/linux/ubuntu focal stable
         state: present
 
     - name: Update apt and instal docker-ce
-      apt:
+      ansible.builtin.apt:
         name: docker-ce
-        state: latest
+        state: present
         update_cache: true
 
     - name: Install Docker Module for Python
-      pip:
+      ansible.builtin.pip:
         name: docker

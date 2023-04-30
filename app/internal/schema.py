@@ -23,12 +23,12 @@ class RemoteMachineCreate(RemoteMachineBase):
 
     flower_type: FlowerType
     ssh_username: str
-    ssh_password: str | None = ""
+    ssh_password: str = ""
 
     # TODO: Ensure that given os_type is valid
     os_type: OsType = OsType.linux
 
-    ssh_port: int | None = 22
+    ssh_port: int = 22
     ssh_key: str | None = None
     ssh_key_passphrase: str | None = None
 

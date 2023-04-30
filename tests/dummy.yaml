@@ -1,0 +1,13 @@
+---
+all:
+  children:
+    flower_server:
+      hosts: null
+    flower_clients:
+      hosts:
+        dummy:
+          ansible_host: !!python/tuple
+          - dummy_host
+          ansible_user: dummy_user
+  vars:
+    ansible_connection: ssh

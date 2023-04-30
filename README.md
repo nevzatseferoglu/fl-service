@@ -9,3 +9,14 @@
 ## Architecture
 
 ![0.1.0](./assets/architecture.png)
+
+
+## ToDo
+
+- Add `ad-hoc` support which wraps the certain operation by doing ad-hoc call to certain hosts.
+- Report missing methods documentations to official repository.
+
+
+## Extra linting
+
+- pyright --outputjson . | jq '.summary | {errorCount, warningCount} | values'
