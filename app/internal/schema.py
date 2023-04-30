@@ -10,16 +10,16 @@ class Status(BaseModel):
     description: str | None = None
 
 
-class RemoteMachineBase(BaseModel):
-    """Remote machine to connect to"""
+class RemoteHostBase(BaseModel):
+    """Remote host to connect to"""
 
     contact_info: str
     ip_address: str
     description: str | None = None
 
 
-class RemoteMachineCreate(RemoteMachineBase):
-    """Remote machine to connect to"""
+class RemoteHostCreate(RemoteHostBase):
+    """Remote host to connect to"""
 
     flower_type: FlowerType
     ssh_username: str
@@ -33,8 +33,8 @@ class RemoteMachineCreate(RemoteMachineBase):
     ssh_key_passphrase: str | None = None
 
 
-class RemoteMachine(RemoteMachineBase):
-    """Remote machine to connect to"""
+class RemoteHost(RemoteHostBase):
+    """Remote host to connect to"""
 
     id: int
 

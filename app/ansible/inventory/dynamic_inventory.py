@@ -3,7 +3,7 @@ import logging
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from ...internal.sql.crud import get_remote_machine_by_ip_address
+from ...internal.sql.crud import get_remote_host_by_ip_address
 from ...internal.utils.ansible import ansible_export_to_yaml
 from ...internal.utils.enum import FlowerType
 from ...internal.utils.validator import validate_ip_address
@@ -26,7 +26,7 @@ FLOWER_INVENTORY = {
 
 
 def add_new_host_to_flower_inventory(
-    machine_identifier: str,
+    host_identifier: str,
     ansible_host: str,
     ansible_user: str,
     flower_type: FlowerType,
@@ -39,13 +39,13 @@ def add_new_host_to_flower_inventory(
             raise Exception(f"Invalid IP address! (ip_address: {ansible_host})")
 
         # check if the host is in the inventory
-        host = get_remote_machine_by_ip_address(db, ansible_host)
+        host = get_remote_host_by_ip_address(db, ansible_host)
         if host == None:
             raise Exception(
                 f"Host {ansible_host} not found in the inventory, it must be added first"
             )
 
-        identifier = f"machine{host.id}_{machine_identifier}"
+        identifier = f"host{host.id}_{host_identifier}"
 
         if flower_type == FlowerType.client:
             empty = (

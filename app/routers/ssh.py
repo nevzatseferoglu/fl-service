@@ -9,7 +9,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.ansible.inventory import dynamic_inventory
-from app.internal.schema import RemoteMachineCreate, Status, StatusType
+from app.internal.schema import RemoteHostCreate, Status, StatusType
 from app.internal.sql import crud
 from app.internal.utils.ssh import command_exists
 from app.internal.utils.validator import validate_ip_address
@@ -63,17 +63,17 @@ def generate_ssh_key_pair() -> Any:
     )
 
 
-@router.post("/copy_ssh_key_to_remote_machine", response_model=Status)
+@router.post("/copy_ssh_key_to_remote_host", response_model=Status)
 def copy_ssh_key_to_remote(
-    machine: Annotated[RemoteMachineCreate, Body()], db: Session = Depends(get_db)
+    host: Annotated[RemoteHostCreate, Body()], db: Session = Depends(get_db)
 ) -> Any:
     # TODO: Convert into async function for the improving performance
     # TODO: Make a batch operation for bunch of operations (important)
 
     """Copies the SSH key to the remote host."""
 
-    if validate_ip_address(machine.ip_address) == False:
-        err = f"Invalid IP address: {machine.ip_address}"
+    if validate_ip_address(host.ip_address) == False:
+        err = f"Invalid IP address: {host.ip_address}"
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
 
@@ -91,10 +91,10 @@ def copy_ssh_key_to_remote(
     try:
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
-            hostname=machine.ip_address,
-            username=machine.ssh_username,
-            password=machine.ssh_password,
-            port=machine.ssh_port,
+            hostname=host.ip_address,
+            username=host.ssh_username,
+            password=host.ssh_password,
+            port=host.ssh_port,
         )
 
         _, _, _ = client.exec_command("mkdir -p ~/.ssh")
@@ -107,20 +107,20 @@ def copy_ssh_key_to_remote(
             f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
         )
 
-        crud.register_remote_machine(db=db, remote_machine=machine)
+        crud.register_remote_host(db=db, remote_host=host)
 
         dynamic_inventory.add_new_host_to_flower_inventory(
-            machine_identifier="",
-            ansible_host=machine.ip_address,
-            ansible_user=machine.ssh_username,
-            flower_type=machine.flower_type,
+            host_identifier="",
+            ansible_host=host.ip_address,
+            ansible_user=host.ssh_username,
+            flower_type=host.flower_type,
             db=db,
         )
 
-        logging.info("SSH key copied to remote machine successfully!")
+        logging.info("SSH key copied to remote host successfully!")
         return Status(
             status=StatusType.success,
-            description="SSH key copied to remote machine successfully!",
+            description="SSH key copied to remote host successfully!",
         )
 
     except paramiko.BadHostKeyException as e:

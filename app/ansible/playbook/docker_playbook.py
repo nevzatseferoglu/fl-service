@@ -69,20 +69,18 @@ INSTALL_DOCKER_PLAYBOOK = {
 }
 
 
-def new_remote_machine_dict_docker_playbook(
-    machine_identifier: str, flower_type: FlowerType
-):
+def new_remote_host_dict_docker_playbook(host_identifier: str, flower_type: FlowerType):
     """
-    Create a new playbook to install docker on a remote machine.
+    Create a new playbook to install docker on a remote host.
 
     hostname: It should be valid with ansible inventory file hostname pattern.
-    depends_on: Given machine is need to be an ubuntu 20,04. And it should be in the inventory file.
+    depends_on: Given host is need to be an ubuntu 20,04. And it should be in the inventory file.
     """
 
     newcopy = copy.deepcopy(INSTALL_DOCKER_PLAYBOOK)["hosts"]
 
     if flower_type == FlowerType.client:
-        newcopy["hosts"] = f"{FLOWER_CLIENTS_GROUP}:{machine_identifier}"
+        newcopy["hosts"] = f"{FLOWER_CLIENTS_GROUP}:{host_identifier}"
     else:
-        newcopy["hosts"] = f"{FLOWER_SERVER_GROUP}:{machine_identifier}"
+        newcopy["hosts"] = f"{FLOWER_SERVER_GROUP}:{host_identifier}"
     return newcopy

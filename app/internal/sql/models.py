@@ -3,8 +3,8 @@ from sqlalchemy import Column, Integer, String
 from .database import Base
 
 
-class RemoteMachine(Base):
-    __tablename__ = "remote_machines"
+class RemoteHost(Base):
+    __tablename__ = "remote_hosts"
 
     id = Column(Integer, primary_key=True, index=True)
     flower_type = Column(String)
