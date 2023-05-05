@@ -67,7 +67,7 @@ def get_remote_host_by_ip_address(
 def get_remote_hosts_by_contact_info(
     contact_info: Annotated[str, Query()], db: Session = Depends(get_db)
 ) -> Any:
-    hosts = crud.get_remote_hosts_by_contact_info(db=db, contact_info=contact_info)
+    hosts = crud.get_remote_host_by_contact_info(db=db, contact_info=contact_info)
     if len(hosts) == 0:
         err = f"No hosts found with contact info {contact_info}"
         logging.error(err)
