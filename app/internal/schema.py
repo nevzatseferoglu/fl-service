@@ -31,6 +31,7 @@ class RemoteHostCreate(RemoteHostBase):
     ssh_port: int = 22
     ssh_key: str | None = None
     ssh_key_passphrase: str | None = None
+    fl_identifier: str
 
 
 class RemoteHost(RemoteHostBase):

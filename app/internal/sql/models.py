@@ -19,3 +19,4 @@ class RemoteHost(Base):
     ssh_key_passphrase = Column(String)
     description = Column(String)
     contact_info = Column(String)
+    fl_identifier = Column(String, unique=True, index=True)

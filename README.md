@@ -21,3 +21,9 @@
 ## Extra linting
 
 - pyright --outputjson . | jq '.summary | {errorCount, warningCount} | values'
+
+
+## Instant TODO
+
+- Change database in a way that it can manage more than one fl algorithm. That mean there will be more than one (server/clients) configuration.
+- 

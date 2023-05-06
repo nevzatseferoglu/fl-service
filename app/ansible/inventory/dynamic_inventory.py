@@ -1,22 +1,23 @@
-import logging
+import os
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ...internal.sql.crud import get_remote_host_by_ip_address
-from ...internal.utils.ansible import ansible_export_to_yaml
+from ...internal.utils.ansible import ansible_export_to_yaml, ansible_read_yaml
 from ...internal.utils.enum import FlowerType
-from ...internal.utils.validator import validate_ip_address
+from ...internal.utils.file import create_file
 from ...routers.database import get_db
 
 FLOWER_SERVER_GROUP = "flower_server"
 FLOWER_CLIENTS_GROUP = "flower_clients"
 
-FLOWER_INVENTORY = {
+
+FLOWER_INVENTORY_DICT = {
     "all": {
         "children": {
-            FLOWER_SERVER_GROUP: {"hosts": None},
-            FLOWER_CLIENTS_GROUP: {"hosts": None},
+            FLOWER_SERVER_GROUP: {"hosts": {}},
+            FLOWER_CLIENTS_GROUP: {"hosts": {}},
         },
         "vars": {
             "ansible_connection": "ssh",
@@ -26,81 +27,67 @@ FLOWER_INVENTORY = {
 
 
 def add_new_host_to_flower_inventory(
-    host_identifier: str,
+    inventory_dirname: str,
     ansible_host: str,
     ansible_user: str,
     flower_type: FlowerType,
     db: Session = Depends(get_db),
 ) -> None:
-    """Add a new host to flower inventory file"""
+    """
+    Add a new host to flower inventory file.
 
-    try:
-        if validate_ip_address(ansible_host) == False:
-            raise Exception(f"Invalid IP address! (ip_address: {ansible_host})")
+    This function doesn't validate the given remote host. The caller should validate the remote host (IPAddress, OS type) before calling this function.
+    """
 
-        # check if the host is in the inventory
-        host = get_remote_host_by_ip_address(db, ansible_host)
-        if host == None:
-            raise Exception(
-                f"Host {ansible_host} not found in the inventory, it must be added first"
-            )
+    # ensure that given host is already registered in the database
+    host = get_remote_host_by_ip_address(db, ansible_host)
+    if host == None:
+        err = f"Host {ansible_host} not found in the database, it must be added first"
+        raise HTTPException(status_code=404, detail=err)
 
-        identifier = f"host{host.id}_{host_identifier}"
+    yaml_dir = f"{os.path.dirname(__file__)}/{inventory_dirname}"
+    yaml_file = f"{yaml_dir}/{inventory_dirname}.yaml"
 
-        if flower_type == FlowerType.client:
-            empty = (
-                FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"]
-                == None
-            )
+    if os.path.exists(yaml_file) == False:
+        if create_file(yaml_file) == False:
+            err = f"Failed to create inventory file {yaml_file}"
+            raise HTTPException(status_code=500, detail=err)
+        ansible_export_to_yaml(dict(FLOWER_INVENTORY_DICT), yaml_file)
 
-            if (
-                not empty
-                and identifier
-                in FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP][
-                    "hosts"
-                ].keys()
-            ):
-                raise Exception(
-                    f"Flower client host {ansible_host} already exists in the inventory"
-                )
+    # read the content of the file as a dict then modify rewrite again.
+    content = ansible_read_yaml(yaml_file)
+    if content == {}:
+        err = f"Failed to read inventory file {yaml_file}, check out the logs for more details"
+        raise HTTPException(status_code=500, detail=err)
 
-            if empty:
-                FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"] = {}
+    # generate unique internal host indentifier (relies on the host id (primary key))
+    identifier = f"host_{host.id}"
 
-            FLOWER_INVENTORY["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"][
-                identifier
-            ] = {
-                "ansible_host": ansible_host,
-                "ansible_user": ansible_user,
-            }
-        else:
-            empty = (
-                FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"]
-                == None
-            )
+    if flower_type == FlowerType.client:
+        if (
+            identifier
+            in content["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"].keys()
+        ):
+            err = f"Flower client host {ansible_host} already exists in the inventory {yaml_file}"
+            raise HTTPException(status_code=409, detail=err)
 
-            if (
-                not empty
-                and identifier
-                in FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP][
-                    "hosts"
-                ].keys()
-            ):
-                raise Exception(
-                    f"Flower server host {ansible_host} already exists in the inventory"
-                )
+        content["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"][identifier] = {
+            "ansible_host": ansible_host,
+            "ansible_user": ansible_user,
+        }
+    else:
+        if (
+            identifier
+            in content["all"]["children"][FLOWER_SERVER_GROUP]["hosts"].keys()
+        ):
+            err = f"Flower server host {ansible_host} already exists in the inventory {yaml_file}"
+            raise HTTPException(status_code=409, detail=err)
 
-            if empty:
-                FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"] = {}
+        content["all"]["children"][FLOWER_SERVER_GROUP]["hosts"][identifier] = {
+            "ansible_host": ansible_host,
+            "ansible_user": ansible_user,
+        }
 
-            FLOWER_INVENTORY["all"]["children"][FLOWER_SERVER_GROUP]["hosts"][
-                identifier
-            ] = {"ansible_host": ansible_host, "ansible_user": ansible_user}
-
-        ansible_export_to_yaml(
-            FLOWER_INVENTORY, "./app/ansible/inventory/flower_inventory.yaml"
-        )
-
-    except Exception as e:
-        logging.error("Exeption occured in add_new_host_to_flower_inventory")
-        raise e
+    if ansible_export_to_yaml(content, yaml_file) == False:
+        err = f"Failed to write inventory file {yaml_file}, check out the logs for more details"
+        raise HTTPException(status_code=500, detail=err)

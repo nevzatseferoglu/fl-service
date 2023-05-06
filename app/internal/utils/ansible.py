@@ -1,26 +1,39 @@
 import logging
-from os import linesep
-from pathlib import Path
+import os
 
 import yaml
 
 
-def ansible_export_to_yaml(dict: dict, file_name: str, is_playbook: bool = False):
-    """Export a dictionary to a yaml file"""
-
-    file_path = Path(file_name)
-
-    # Create the directory if it does not exist
-    if not file_path.parent.exists():
-        file_path.parent.mkdir(parents=True, exist_ok=True)
+def ansible_read_yaml(filepath: str) -> dict:
+    """
+    Read a yaml file and return a dictionary.
+    """
 
     try:
-        with file_path.open("w") as yaml_file:
+        with open(filepath, "r") as yaml_file:
+            return yaml.safe_load(yaml_file)
+    except (yaml.YAMLError, OSError) as e:
+        logging.error(f"Failed to read {filepath} as a yaml file, {e}")
+        return {}
+
+
+def ansible_export_to_yaml(
+    dict: dict, filepath: str, is_playbook: bool = False
+) -> bool:
+    """
+    Export a dictionary to a yaml file.
+    """
+
+    try:
+        with open(filepath, "w") as yaml_file:
             if not is_playbook:
-                yaml_file.write("# code: language=ansible" + 2 * linesep)
+                yaml_file.write("# code: language=ansible" + 2 * os.linesep)
             else:
-                yaml_file.write("---" + linesep)
+                yaml_file.write("---" + os.linesep)
             yaml.dump(dict, yaml_file, default_flow_style=False, sort_keys=False)
-        logging.info(f"Successfully exported dictionary to {file_name}")
-    except IOError as e:
-        logging.error(f"Failed to export dictionary to {file_name} as a yaml file, {e}")
+        logging.info(f"Successfully exported dictionary to {filepath}")
+    except (IOError, OSError) as e:
+        logging.error(f"Failed to export dictionary to {filepath} as a yaml file, {e}")
+        return False
+    else:
+        return True

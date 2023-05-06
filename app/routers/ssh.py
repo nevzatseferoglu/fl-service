@@ -1,7 +1,6 @@
 import logging
+import os
 import subprocess
-from os import makedirs, path
-from pathlib import Path
 from typing import Annotated, Any
 
 import paramiko
@@ -11,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.ansible.inventory import dynamic_inventory
 from app.internal.schema import RemoteHostCreate, Status, StatusType
 from app.internal.sql import crud
+from app.internal.utils.enum import OsType
 from app.internal.utils.ssh import command_exists
 from app.internal.utils.validator import validate_ip_address
 from app.routers.database import get_db
@@ -20,20 +20,26 @@ router = APIRouter(
     tags=["ssh"],
 )
 
+DEFAULT_SSH_PRIVATE_KEY_PATH = os.path.expanduser("~/.ssh/id_rsa")
+DEFAULT_SSH_PUBLIC_KEY_PATH = os.path.expanduser("~/.ssh/id_rsa.pub")
+DEFAULT_SSH_PATH = os.path.expanduser("~/.ssh")
+
+# NOTE:
+# - All endpoints validates ip address (syntax only) before doing any operation, if needed.
+# - All endpoints validates given host is in the inventory before doing any operation, if needed.
+
 
 @router.post("/generate_ssh_key_pair", response_model=Status)
 def generate_ssh_key_pair() -> Any:
     """Generate SSH key pair for the server."""
 
-    ssh_key_path = path.expanduser("~/.ssh/id_rsa")
-    if Path(ssh_key_path).is_file():
+    if os.path.exists(DEFAULT_SSH_PRIVATE_KEY_PATH):
         err = "SSH key already exists!"
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=err)
 
-    ssh_path = path.expanduser("~/.ssh")
-    if not Path(ssh_path).is_dir():
-        makedirs("~/.ssh", mode=700, exist_ok=True)
+    if os.path.exists(DEFAULT_SSH_PATH) == False:
+        os.makedirs(DEFAULT_SSH_PATH, exist_ok=True)
 
     if not command_exists("ssh-keygen"):
         err = "ssh-keygen command not found!"
@@ -44,13 +50,25 @@ def generate_ssh_key_pair() -> Any:
         )
 
     result = subprocess.run(
-        ["ssh-keygen", "-t", "rsa", "-b", "4096", "-N", "", "-q", "-f", ssh_key_path],
+        [
+            "ssh-keygen",
+            "-t",
+            "rsa",
+            "-b",
+            "4096",
+            "-N",
+            "",
+            "-q",
+            "-f",
+            DEFAULT_SSH_PRIVATE_KEY_PATH,
+            "-y",
+        ],
         stderr=subprocess.PIPE,
         text=True,
     )
 
     if result.returncode != 0:
-        err = f"SSH key generation failed: \n{result.stderr}"
+        err = f"SSH key generation failed: {result.stderr}"
         logging.error(err)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -77,8 +95,14 @@ def copy_ssh_key_to_remote(
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
 
-    ssh_pub_key_path = path.expanduser("~/.ssh/id_rsa.pub")
-    if not Path(ssh_pub_key_path).is_file():
+    # only linux is supported for now
+    if host.os_type != OsType.linux:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid os_type! (os_type: {host.os_type})",
+        )
+
+    if os.path.exists(DEFAULT_SSH_PUBLIC_KEY_PATH) == False:
         err = "SSH public key does not exist!"
         logging.error(err)
         raise HTTPException(
@@ -100,17 +124,25 @@ def copy_ssh_key_to_remote(
         _, _, _ = client.exec_command("mkdir -p ~/.ssh")
         _, _, _ = client.exec_command("touch ~/.ssh/authorized_keys")
 
-        with open(ssh_pub_key_path, "r") as f:
+        with open(DEFAULT_SSH_PUBLIC_KEY_PATH, "r") as f:
             content = f.read()
 
-        _, _, _ = client.exec_command(
+        _, _, stderr = client.exec_command(
             f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
         )
 
-        crud.register_remote_host(db=db, remote_host=host)
+        stderr_output = stderr.read().decode("utf-8")
+        if stderr_output:
+            err = f"SSH key copy failed: {stderr_output}"
+            logging.error(err)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=err,
+            )
 
+        crud.register_remote_host(db=db, remote_host=host)
         dynamic_inventory.add_new_host_to_flower_inventory(
-            host_identifier="",
+            inventory_dirname=host.fl_identifier,
             ansible_host=host.ip_address,
             ansible_user=host.ssh_username,
             flower_type=host.flower_type,
