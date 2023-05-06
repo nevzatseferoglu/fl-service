@@ -75,7 +75,7 @@ def test_export_to_yaml():
 
     try:
         ansible_export_to_yaml(
-            dict=FLOWER_INVENTORY, file_name="dummy.yaml", is_playbook=True
+            dict=FLOWER_INVENTORY, filepath="dummy.yaml", is_playbook=True
         )
     except Exception as e:
         raise e
