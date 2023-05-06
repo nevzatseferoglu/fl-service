@@ -13,7 +13,9 @@ from . import models
 def get_remote_host_by_contact_info(
     db: Session, contact_info: str
 ) -> list[models.RemoteHost]:
-    """Returns a list of remote hosts that have the given contact info"""
+    """
+    Returns a list of remote hosts that have the given contact info.
+    """
 
     try:
         return (
@@ -33,7 +35,9 @@ def get_remote_host_by_contact_info(
 def get_remote_hosts(
     db: Session, skip: int = 0, limit: int = 100
 ) -> list[models.RemoteHost]:
-    """Returns a list of remote hosts"""
+    """
+    Returns a list of remote hosts.
+    """
     # TODO: Add sorting logic so that the returned list is sorted in a predictable order
 
     try:
@@ -46,7 +50,9 @@ def get_remote_hosts(
 
 
 def get_remote_host_by_ip_address(db: Session, ip_address: str) -> models.RemoteHost:
-    """Returns a remote host with the given ip address"""
+    """
+    Returns a remote host with the given ip address.
+    """
 
     try:
         return (
@@ -64,6 +70,10 @@ def get_remote_host_by_ip_address(db: Session, ip_address: str) -> models.Remote
 def get_remote_host_by_fl_identifier(
     db: Session, fl_identifier: str
 ) -> list[models.RemoteHost]:
+    """
+    Returns a list of remote hosts that have the given fl_identifier.
+    """
+
     try:
         return (
             db.query(models.RemoteHost)

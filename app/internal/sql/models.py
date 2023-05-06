@@ -4,6 +4,10 @@ from .database import Base
 
 
 class RemoteHost(Base):
+    """
+    Model for remote hosts.
+    """
+
     __tablename__ = "remote_hosts"
 
     id = Column(Integer, primary_key=True, index=True)

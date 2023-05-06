@@ -2,14 +2,18 @@ from enum import Enum
 
 
 class StatusType(str, Enum):
-    """Status type"""
+    """
+    Status type.
+    """
 
     success = "success"
     error = "error"
 
 
 class OsType(str, Enum):
-    """Operating system type"""
+    """
+    Operating system type.
+    """
 
     linux = "linux"
     windows = "windows"
@@ -23,7 +27,9 @@ class OsType(str, Enum):
 
 
 class FlowerType(str, Enum):
-    """Flower component type"""
+    """
+    Flower component type.
+    """
 
     server = "server"
     client = "client"

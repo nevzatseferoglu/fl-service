@@ -4,14 +4,18 @@ from .utils.enum import FlowerType, OsType, StatusType
 
 
 class Status(BaseModel):
-    """Status check"""
+    """
+    Pydantic Model: Status check.
+    """
 
     status: StatusType
     description: str | None = None
 
 
 class RemoteHostBase(BaseModel):
-    """Remote host to connect to"""
+    """
+    Pydantic Model: Remote host to connect to.
+    """
 
     contact_info: str
     ip_address: str
@@ -19,23 +23,26 @@ class RemoteHostBase(BaseModel):
 
 
 class RemoteHostCreate(RemoteHostBase):
-    """Remote host to connect to"""
+    """
+    Pydantic Model: Remote host to connect to.
+    """
 
+    fl_identifier: str
     flower_type: FlowerType
     ssh_username: str
     ssh_password: str = ""
 
-    # TODO: Ensure that given os_type is valid
     os_type: OsType = OsType.linux
 
     ssh_port: int = 22
     ssh_key: str | None = None
     ssh_key_passphrase: str | None = None
-    fl_identifier: str
 
 
 class RemoteHost(RemoteHostBase):
-    """Remote host to connect to"""
+    """
+    Pydantic Model: Remote host to connect to.
+    """
 
     id: int
 

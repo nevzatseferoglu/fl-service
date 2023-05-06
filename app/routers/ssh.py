@@ -102,6 +102,11 @@ def copy_ssh_key_to_remote(
             detail=f"Invalid os_type! (os_type: {host.os_type})",
         )
 
+    if host.fl_identifier.isspace():
+        err = "Invalid flower identifier, it cannot contain whitespace characters."
+        logging.error(err)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
+
     if os.path.exists(DEFAULT_SSH_PUBLIC_KEY_PATH) == False:
         err = "SSH public key does not exist!"
         logging.error(err)
