@@ -37,6 +37,7 @@ class RemoteHostCreate(RemoteHostBase):
     ssh_port: int = 22
     ssh_key: str | None = None
     ssh_key_passphrase: str | None = None
+    host_pattern: str | None
 
 
 class RemoteHost(RemoteHostBase):
@@ -45,6 +46,20 @@ class RemoteHost(RemoteHostBase):
     """
 
     id: int
+
+    class Config:
+        orm_mode = True
+
+
+class RemoteHostDockerState(BaseModel):
+    host_id: str
+    state_install_aptitude: str
+    state_install_required_system_packages: str
+    state_add_docker_gpg_apt_key: str
+    state_add_docker_repository: str
+    state_update_apt_and_install_docker_ce: str
+    state_install_docker_module_for_python: str
+    general_state: str
 
     class Config:
         orm_mode = True

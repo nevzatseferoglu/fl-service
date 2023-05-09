@@ -12,7 +12,7 @@
 ![0.1.0](./assets/architecture.png)
 
 
-## ToDo
+## Plannings
 
 - Add `ad-hoc` support which wraps the certain operation by doing ad-hoc call to certain hosts.
 - Report missing methods documentations to official repository.
@@ -23,7 +23,11 @@
 - pyright --outputjson . | jq '.summary | {errorCount, warningCount} | values'
 
 
-## Instant TODO
+## ToDo
 
 - Change database in a way that it can manage more than one fl algorithm. That mean there will be more than one (server/clients) configuration.
-- 
+- Change database type to client/server arch.
+- Update architecture diagram.
+- Draw sequence diagram.
+- Documentation
+

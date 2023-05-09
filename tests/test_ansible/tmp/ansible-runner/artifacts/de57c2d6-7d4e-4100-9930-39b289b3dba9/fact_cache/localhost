@@ -1,0 +1,675 @@
+{
+    "_ansible_facts_gathered": true,
+    "ansible_all_ipv4_addresses": [
+        "192.168.1.103"
+    ],
+    "ansible_all_ipv6_addresses": [
+        "fe80::c8a5:85ff:fed1:ee78%anpi1",
+        "fe80::c8a5:85ff:fed1:ee77%anpi0",
+        "fe80::29:5901:14ba:7007%en0",
+        "fe80::1c4b:19ff:fefe:fbcf%awdl0",
+        "fe80::1c4b:19ff:fefe:fbcf%llw0",
+        "fe80::fccb:1798:120e:8daf%utun0",
+        "fe80::809f:2f1b:4229:6dba%utun1",
+        "fe80::ce81:b1c:bd2c:69e%utun2"
+    ],
+    "ansible_anpi0": {
+        "device": "anpi0",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [
+            {
+                "address": "fe80::c8a5:85ff:fed1:ee77%anpi0",
+                "prefix": "64",
+                "scope": "0x5"
+            }
+        ],
+        "macaddress": "ca:a5:85:d1:ee:77",
+        "media": "Unknown",
+        "media_select": "none",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_anpi1": {
+        "device": "anpi1",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [
+            {
+                "address": "fe80::c8a5:85ff:fed1:ee78%anpi1",
+                "prefix": "64",
+                "scope": "0x4"
+            }
+        ],
+        "macaddress": "ca:a5:85:d1:ee:78",
+        "media": "Unknown",
+        "media_select": "none",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_ap1": {
+        "device": "ap1",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "f6:57:63:c8:3d:ea",
+        "media": "Unknown",
+        "media_select": "autoselect",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_apparmor": {
+        "status": "disabled"
+    },
+    "ansible_architecture": "arm64",
+    "ansible_awdl0": {
+        "device": "awdl0",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "RUNNING",
+            "PROMISC",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [
+            {
+                "address": "fe80::1c4b:19ff:fefe:fbcf%awdl0",
+                "prefix": "64",
+                "scope": "0xc"
+            }
+        ],
+        "macaddress": "1e:4b:19:fe:fb:cf",
+        "media": "Unknown",
+        "media_select": "autoselect",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "active",
+        "type": "ether"
+    },
+    "ansible_bridge0": {
+        "device": "bridge0",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "36:3a:2d:38:48:c0",
+        "media": "Unknown",
+        "media_select": "Unknown",
+        "media_type": "unknown type",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_date_time": {
+        "date": "2023-05-08",
+        "day": "08",
+        "epoch": "1683523034",
+        "epoch_int": "1683523034",
+        "hour": "08",
+        "iso8601": "2023-05-08T05:17:14Z",
+        "iso8601_basic": "20230508T081714195667",
+        "iso8601_basic_short": "20230508T081714",
+        "iso8601_micro": "2023-05-08T05:17:14.195667Z",
+        "minute": "17",
+        "month": "05",
+        "second": "14",
+        "time": "08:17:14",
+        "tz": "+03",
+        "tz_dst": "+03",
+        "tz_offset": "+0300",
+        "weekday": "Monday",
+        "weekday_number": "1",
+        "weeknumber": "19",
+        "year": "2023"
+    },
+    "ansible_default_ipv4": {
+        "address": "192.168.1.103",
+        "broadcast": "192.168.1.255",
+        "device": "en0",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "gateway": "192.168.1.1",
+        "interface": "en0",
+        "macaddress": "d4:57:63:c8:3d:ea",
+        "media": "Unknown",
+        "media_select": "autoselect",
+        "mtu": "1500",
+        "netmask": "255.255.255.0",
+        "network": "192.168.1.0",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "active",
+        "type": "ether"
+    },
+    "ansible_default_ipv6": {},
+    "ansible_distribution": "MacOSX",
+    "ansible_distribution_major_version": "12",
+    "ansible_distribution_release": "21.6.0",
+    "ansible_distribution_version": "12.6",
+    "ansible_dns": {
+        "nameservers": [
+            "192.168.1.1"
+        ],
+        "search": [
+            "local"
+        ]
+    },
+    "ansible_domain": "168.1.103",
+    "ansible_effective_group_id": 20,
+    "ansible_effective_user_id": 501,
+    "ansible_en0": {
+        "device": "en0",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [
+            {
+                "address": "192.168.1.103",
+                "broadcast": "192.168.1.255",
+                "netmask": "255.255.255.0",
+                "network": "192.168.1.0"
+            }
+        ],
+        "ipv6": [
+            {
+                "address": "fe80::29:5901:14ba:7007%en0",
+                "prefix": "64"
+            }
+        ],
+        "macaddress": "d4:57:63:c8:3d:ea",
+        "media": "Unknown",
+        "media_select": "autoselect",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "active",
+        "type": "ether"
+    },
+    "ansible_en1": {
+        "device": "en1",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "PROMISC",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "36:3a:2d:38:48:c0",
+        "media": "Unknown",
+        "media_select": "autoselect",
+        "media_type": "full-duplex",
+        "mtu": "1500",
+        "options": [
+            "TSO4",
+            "TSO6",
+            "CHANNEL_IO"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_en2": {
+        "device": "en2",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "PROMISC",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "36:3a:2d:38:48:c4",
+        "media": "Unknown",
+        "media_select": "autoselect",
+        "media_type": "full-duplex",
+        "mtu": "1500",
+        "options": [
+            "TSO4",
+            "TSO6",
+            "CHANNEL_IO"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_en3": {
+        "device": "en3",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "ca:a5:85:d1:ee:57",
+        "media": "Unknown",
+        "media_select": "none",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_en4": {
+        "device": "en4",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "ca:a5:85:d1:ee:58",
+        "media": "Unknown",
+        "media_select": "none",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "inactive",
+        "type": "ether"
+    },
+    "ansible_env": {
+        "ANSIBLE_CACHE_PLUGIN": "jsonfile",
+        "ANSIBLE_CACHE_PLUGIN_CONNECTION": "/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/tmp/ansible-runner/artifacts/de57c2d6-7d4e-4100-9930-39b289b3dba9/fact_cache",
+        "ANSIBLE_CALLBACK_PLUGINS": "/Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/lib/python3.10/site-packages/ansible_runner/display_callback/callback",
+        "ANSIBLE_HOST_KEY_CHECKING": "False",
+        "ANSIBLE_RETRY_FILES_ENABLED": "False",
+        "ANSIBLE_STDOUT_CALLBACK": "awx_display",
+        "AWX_ISOLATED_DATA_DIR": "/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/tmp/ansible-runner/artifacts/de57c2d6-7d4e-4100-9930-39b289b3dba9",
+        "COLORFGBG": "15;0",
+        "COLORTERM": "truecolor",
+        "COMMAND_MODE": "unix2003",
+        "FZF_DEFAULT_COMMAND": "fd --type f --hidden --exclude .git",
+        "FZF_DEFAULT_OPTS": "--height 50% --layout=reverse --border",
+        "GOPATH": "/Users/nevzatseferoglu/go",
+        "GOROOT": "/opt/homebrew/opt/go/libexec",
+        "HOME": "/Users/nevzatseferoglu",
+        "HOMEBREW_CELLAR": "/opt/homebrew/Cellar",
+        "HOMEBREW_PREFIX": "/opt/homebrew",
+        "HOMEBREW_REPOSITORY": "/opt/homebrew",
+        "INFOPATH": "/opt/homebrew/share/info:",
+        "ITERM_PROFILE": "Default",
+        "ITERM_SESSION_ID": "w0t0p3:C81AE293-4E10-41C7-A270-497D0BBFD3F2",
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home",
+        "LC_CTYPE": "UTF-8",
+        "LC_TERMINAL": "iTerm2",
+        "LC_TERMINAL_VERSION": "3.4.19",
+        "LESS": "-R",
+        "LESS_TERMCAP_mb": "\u001b[1;32m",
+        "LESS_TERMCAP_md": "\u001b[1;32m",
+        "LESS_TERMCAP_me": "\u001b[0m",
+        "LESS_TERMCAP_se": "\u001b[0m",
+        "LESS_TERMCAP_so": "\u001b[01;33m",
+        "LESS_TERMCAP_ue": "\u001b[0m",
+        "LESS_TERMCAP_us": "\u001b[1;4;31m,",
+        "LOGNAME": "nevzatseferoglu",
+        "LSCOLORS": "Gxfxcxdxbxegedabagacad",
+        "LS_COLORS": "di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43",
+        "MANPATH": "/opt/homebrew/share/man::",
+        "OPENAI_API_KEY": "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",
+        "P9K_SSH": "0",
+        "P9K_TTY": "old",
+        "PAGER": "less",
+        "PATH": "/Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/bin:/Users/nevzatseferoglu/.local/bin/:/Users/nevzatseferoglu/Library/Python/3.10/bin:/opt/homebrew/opt/sqlite/bin:/opt/homebrew/opt/openssl@3/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Users/nevzatseferoglu/go/bin:/opt/homebrew/opt/go/libexec/bin:/Users/nevzatseferoglu/.spicetify:/opt/homebrew/opt/fzf/bin",
+        "PWD": "/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible",
+        "RUNNER_OMIT_EVENTS": "False",
+        "RUNNER_ONLY_FAILED_EVENTS": "False",
+        "SHELL": "/bin/zsh",
+        "SHLVL": "3",
+        "SSH_AUTH_SOCK": "/private/tmp/com.apple.launchd.PSW1i5GzAc/Listeners",
+        "TERM": "xterm-256color",
+        "TERM_PROGRAM": "iTerm.app",
+        "TERM_PROGRAM_VERSION": "3.4.19",
+        "TERM_SESSION_ID": "w0t0p3:C81AE293-4E10-41C7-A270-497D0BBFD3F2",
+        "TMPDIR": "/var/folders/nq/qv4tk8gn0sl1d0j05j4pxfjm0000gn/T/",
+        "USER": "nevzatseferoglu",
+        "VIRTUAL_ENV": "/Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10",
+        "XPC_FLAGS": "0x0",
+        "XPC_SERVICE_NAME": "0",
+        "ZSH": "/Users/nevzatseferoglu/.oh-my-zsh",
+        "_": "/opt/homebrew/bin/python3.11",
+        "_P9K_TTY": "/dev/ttys003",
+        "__CFBundleIdentifier": "com.googlecode.iterm2",
+        "__CF_USER_TEXT_ENCODING": "0x1F5:0x0:0x0"
+    },
+    "ansible_fibre_channel_wwn": [],
+    "ansible_fips": false,
+    "ansible_fqdn": "192.168.1.103",
+    "ansible_gif0": {
+        "device": "gif0",
+        "flags": [
+            "POINTOPOINT",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "unknown",
+        "mtu": "1280",
+        "type": "unknown"
+    },
+    "ansible_hostname": "192",
+    "ansible_hostnqn": "",
+    "ansible_interfaces": [
+        "anpi0",
+        "anpi1",
+        "ap1",
+        "awdl0",
+        "bridge0",
+        "en0",
+        "en1",
+        "en2",
+        "en3",
+        "en4",
+        "gif0",
+        "llw0",
+        "lo0",
+        "stf0",
+        "utun0",
+        "utun1",
+        "utun2"
+    ],
+    "ansible_is_chroot": false,
+    "ansible_iscsi_iqn": "",
+    "ansible_kernel": "21.6.0",
+    "ansible_kernel_version": "Darwin Kernel Version 21.6.0: Mon Aug 22 20:20:05 PDT 2022; root:xnu-8020.140.49~2/RELEASE_ARM64_T8101",
+    "ansible_llw0": {
+        "device": "llw0",
+        "flags": [
+            "UP",
+            "BROADCAST",
+            "SMART",
+            "RUNNING",
+            "SIMPLEX",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [
+            {
+                "address": "fe80::1c4b:19ff:fefe:fbcf%llw0",
+                "prefix": "64",
+                "scope": "0xd"
+            }
+        ],
+        "macaddress": "1e:4b:19:fe:fb:cf",
+        "media": "Unknown",
+        "media_select": "autoselect",
+        "mtu": "1500",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "status": "active",
+        "type": "ether"
+    },
+    "ansible_lo0": {
+        "device": "lo0",
+        "flags": [
+            "UP",
+            "LOOPBACK",
+            "RUNNING",
+            "MULTICAST"
+        ],
+        "ipv4": [
+            {
+                "address": "127.0.0.1",
+                "broadcast": "127.255.255.255",
+                "netmask": "255.0.0.0",
+                "network": "127.0.0.0"
+            }
+        ],
+        "ipv6": [
+            {
+                "address": "::1",
+                "prefix": "128"
+            },
+            {
+                "address": "fe80::1%lo0",
+                "prefix": "64",
+                "scope": "0x1"
+            }
+        ],
+        "macaddress": "unknown",
+        "mtu": "16384",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "type": "loopback"
+    },
+    "ansible_loadavg": {
+        "15m": 1.39892578125,
+        "1m": 1.2060546875,
+        "5m": 1.271484375
+    },
+    "ansible_local": {},
+    "ansible_lsb": {},
+    "ansible_machine": "arm64",
+    "ansible_memfree_mb": 12601,
+    "ansible_memtotal_mb": 16384,
+    "ansible_model": "MacBookAir10,1",
+    "ansible_nodename": "192.168.1.103",
+    "ansible_os_family": "Darwin",
+    "ansible_osrevision": "199506",
+    "ansible_osversion": "21G115",
+    "ansible_pkg_mgr": "homebrew",
+    "ansible_processor": "Apple M1",
+    "ansible_processor_cores": "8",
+    "ansible_processor_vcpus": "8",
+    "ansible_product_name": "MacBookAir10,1",
+    "ansible_python": {
+        "executable": "/opt/homebrew/opt/python@3.11/bin/python3.11",
+        "has_sslcontext": true,
+        "type": "cpython",
+        "version": {
+            "major": 3,
+            "micro": 3,
+            "minor": 11,
+            "releaselevel": "final",
+            "serial": 0
+        },
+        "version_info": [
+            3,
+            11,
+            3,
+            "final",
+            0
+        ]
+    },
+    "ansible_python_version": "3.11.3",
+    "ansible_real_group_id": 20,
+    "ansible_real_user_id": 501,
+    "ansible_selinux": {
+        "status": "Missing selinux Python library"
+    },
+    "ansible_selinux_python_present": false,
+    "ansible_service_mgr": "launchd",
+    "ansible_ssh_host_key_dsa_public": "AAAAB3NzaC1kc3MAAACBALZuKaejYYcXtKpXiNpV8Gk3XVYXeLvipIT9bQ0Uw3QJuThh/d6oMChF1TYvML4eblHiWcegtieO7AwO2A65k/dOtpz+ofIliHrVz1aXixuT++KUroPqxamTnf4KNaoEJo1XpXH7VRwmXqa94GsYdynUBF75l859T9ETPTRWQHs3AAAAFQDH0kmk7Onp3ijgIMti2yzInggTUQAAAIARJvcevQgIzeBC9xfiiTubYds3+vC2PWOeurQaM0hfslkjbqbe5LBcoGEjk8LBjkrPOs8rLIqZJltQDcekXln6oE4yMupOxXqAFWFDrLwVZlamwtoYgq5r3vUhSsJy3CIQFLUmTX1ZFPJpIxwGt3n/Wb++5BKa45qqwTVlvEkF9QAAAIAKngnTOEKB53muz+ORgtDIpV4PrF3MzsrwOueKMX+RfkWmsIhUJmyNsqEd2RTfVjfWw3aTSwPDGV4417ic6Kl80aKZA/uR77xy9C59EEiC9NV2m3SAxUtjasJL8NfJUippPkH2IsfDTIrzu/OT28RfsIHHU2jppgjEAg/UsQdhng==",
+    "ansible_ssh_host_key_dsa_public_keytype": "ssh-dss",
+    "ansible_ssh_host_key_ecdsa_public": "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEXHS/hexDPrho4IhCroU+vpfjfnSWUY04sF3nSYePKPR0PbqnJhRdf05crW9PGnKNLAe2CuI7xPd0EFshyUNP4=",
+    "ansible_ssh_host_key_ecdsa_public_keytype": "ecdsa-sha2-nistp256",
+    "ansible_ssh_host_key_ed25519_public": "AAAAC3NzaC1lZDI1NTE5AAAAILP/NB5utUiAwFy8P21DyBuGZaT6BU8KjQwLZYDuTel6",
+    "ansible_ssh_host_key_ed25519_public_keytype": "ssh-ed25519",
+    "ansible_ssh_host_key_rsa_public": "AAAAB3NzaC1yc2EAAAADAQABAAABgQCiCWXpigwmTguQZFIMEDTVGeLfSl+OZy11QlTx59vHjrgEIHZVQeWMmVDPgqU9CQSQR9/1YCg4hayhsGmfY++L+tYv/gLUiG8PGapxaZMHZtdmD9ckhLyncacp4qqL2s1zBBRevR1oPu3pb6YCOj+GVujsZrs2rrTB3kXIjFZbmrqjw8XPk5tsyTGPCMKFgUnlZ/BGxIhH3VwqZ95kzeNptJG/qg/jSIa5B4ezc6XaaK7oXA5FMrZvKLc9u2/i4OKWVHxaYzn/daxumooH6jL7ESeeYxhzxKV3wqvPmR9CLpT/t88h9ELgsBQlKVQQdxFNv07lZGlEOwF+4k8FRQ72suEJctF1dC4Eq3rrvtCPy+84U3fFxhVfkGN6Ek3KSmg5AhdBnIEJ+PNftWBJ1Xy6Srgw60hpagKSGPmgcvHQGQCM/8FC5BrLBXq8WcmxNwxsC/tUUeKD8yjjlee3QWHot1i1oFhADbaIAYlb3Pu4Jt/l8Awl+7z3DdJHl/chdi8=",
+    "ansible_ssh_host_key_rsa_public_keytype": "ssh-rsa",
+    "ansible_stf0": {
+        "device": "stf0",
+        "flags": [],
+        "ipv4": [],
+        "ipv6": [],
+        "macaddress": "unknown",
+        "mtu": "1280",
+        "type": "unknown"
+    },
+    "ansible_system": "Darwin",
+    "ansible_system_capabilities": "N/A",
+    "ansible_system_capabilities_enforced": "N/A",
+    "ansible_uptime_seconds": 12745,
+    "ansible_user_dir": "/Users/nevzatseferoglu",
+    "ansible_user_gecos": "Nevzat Seferoglu",
+    "ansible_user_gid": 20,
+    "ansible_user_id": "nevzatseferoglu",
+    "ansible_user_shell": "/bin/zsh",
+    "ansible_user_uid": 501,
+    "ansible_userspace_bits": "64",
+    "ansible_utun0": {
+        "device": "utun0",
+        "flags": [
+            "UP",
+            "POINTOPOINT",
+            "RUNNING",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [
+            {
+                "address": "fe80::fccb:1798:120e:8daf%utun0",
+                "prefix": "64",
+                "scope": "0xf"
+            }
+        ],
+        "macaddress": "unknown",
+        "mtu": "2000",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "type": "unknown"
+    },
+    "ansible_utun1": {
+        "device": "utun1",
+        "flags": [
+            "UP",
+            "POINTOPOINT",
+            "RUNNING",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [
+            {
+                "address": "fe80::809f:2f1b:4229:6dba%utun1",
+                "prefix": "64",
+                "scope": "0x10"
+            }
+        ],
+        "macaddress": "unknown",
+        "mtu": "1380",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "type": "unknown"
+    },
+    "ansible_utun2": {
+        "device": "utun2",
+        "flags": [
+            "UP",
+            "POINTOPOINT",
+            "RUNNING",
+            "MULTICAST"
+        ],
+        "ipv4": [],
+        "ipv6": [
+            {
+                "address": "fe80::ce81:b1c:bd2c:69e%utun2",
+                "prefix": "64",
+                "scope": "0x11"
+            }
+        ],
+        "macaddress": "unknown",
+        "mtu": "1000",
+        "options": [
+            "PERFORMNUD",
+            "DAD"
+        ],
+        "type": "unknown"
+    },
+    "ansible_virtualization_role": "",
+    "ansible_virtualization_tech_guest": [],
+    "ansible_virtualization_tech_host": [],
+    "ansible_virtualization_type": "",
+    "discovered_interpreter_python": "/opt/homebrew/bin/python3.11",
+    "gather_subset": [
+        "all"
+    ],
+    "module_setup": true
+}

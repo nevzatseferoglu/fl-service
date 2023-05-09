@@ -97,9 +97,11 @@ def copy_ssh_key_to_remote(
 
     # only linux is supported for now
     if host.os_type != OsType.linux:
+        err = f"Invalid os_type! (os_type: {host.os_type})"
+        logging.error(err)
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid os_type! (os_type: {host.os_type})",
+            detail=err,
         )
 
     if host.fl_identifier.isspace():
@@ -139,7 +141,6 @@ def copy_ssh_key_to_remote(
         stderr_output = stderr.read().decode("utf-8")
         if stderr_output:
             err = f"SSH key copy failed: {stderr_output}"
-            logging.error(err)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=err,
@@ -148,6 +149,7 @@ def copy_ssh_key_to_remote(
         crud.register_remote_host(db=db, remote_host=host)
         dynamic_inventory.add_new_host_to_flower_inventory(
             inventory_dirname=host.fl_identifier,
+            host_pattern=host.host_pattern,
             ansible_host=host.ip_address,
             ansible_user=host.ssh_username,
             flower_type=host.flower_type,

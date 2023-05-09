@@ -1,0 +1,63 @@
+[0;34mansible-playbook [core 2.14.5][0m
+[0;34m  config file = None[0m
+[0;34m  configured module search path = ['/Users/nevzatseferoglu/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules'][0m
+[0;34m  ansible python module location = /Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/lib/python3.10/site-packages/ansible[0m
+[0;34m  ansible collection location = /Users/nevzatseferoglu/.ansible/collections:/usr/share/ansible/collections[0m
+[0;34m  executable location = /Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/bin/ansible-playbook[0m
+[0;34m  python version = 3.10.7 (v3.10.7:6cc6b13308, Sep  5 2022, 14:02:52) [Clang 13.0.0 (clang-1300.0.29.30)] (/Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/bin/python)[0m
+[0;34m  jinja version = 3.1.2[0m
+[0;34m  libyaml = True[0m
+[0;34mNo config file found; using defaults[0m
+[0;34mhost_list declined parsing /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/inventory.yaml as it did not pass its verify_file() method[0m
+[0;34mscript declined parsing /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/inventory.yaml as it did not pass its verify_file() method[0m
+[0;34mParsed /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/inventory.yaml inventory source with yaml plugin[0m
+[0;34mSkipping callback 'awx_display', as we already have a stdout callback.[0m
+[0;34mSkipping callback 'default', as we already have a stdout callback.[0m
+[0;34mSkipping callback 'minimal', as we already have a stdout callback.[0m
+[0;34mSkipping callback 'oneline', as we already have a stdout callback.[0m
+
+PLAYBOOK: playbook.yaml ********************************************************
+[0;34m1 plays in /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/playbook.yaml[0m
+
+PLAY [Test handler playbook] ***************************************************
+
+TASK [Gathering Facts] *********************************************************
+[1;30mtask path: /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/playbook.yaml:3[0m
+[0;34m<localhost> ESTABLISH LOCAL CONNECTION FOR USER: nevzatseferoglu[0m
+[0;34m<localhost> EXEC /bin/sh -c 'echo ~nevzatseferoglu && sleep 0'[0m
+[0;34m<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /Users/nevzatseferoglu/.ansible/tmp `"&& mkdir "` echo /Users/nevzatseferoglu/.ansible/tmp/ansible-tmp-1683584935.490199-19130-74942800962797 `" && echo ansible-tmp-1683584935.490199-19130-74942800962797="` echo /Users/nevzatseferoglu/.ansible/tmp/ansible-tmp-1683584935.490199-19130-74942800962797 `" ) && sleep 0'[0m
+[0;34m<localhost> Attempting python interpreter discovery[0m
+[0;34m<localhost> EXEC /bin/sh -c 'echo PLATFORM; uname; echo FOUND; command -v '"'"'python3.11'"'"'; command -v '"'"'python3.10'"'"'; command -v '"'"'python3.9'"'"'; command -v '"'"'python3.8'"'"'; command -v '"'"'python3.7'"'"'; command -v '"'"'python3.6'"'"'; command -v '"'"'python3.5'"'"'; command -v '"'"'/usr/bin/python3'"'"'; command -v '"'"'/usr/libexec/platform-python'"'"'; command -v '"'"'python2.7'"'"'; command -v '"'"'/usr/bin/python'"'"'; command -v '"'"'python'"'"'; echo ENDFOUND && sleep 0'[0m
+[0;34m<localhost> Python interpreter discovery fallback (unsupported platform for extended discovery: darwin)[0m
+[0;34mUsing module file /Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/lib/python3.10/site-packages/ansible/modules/setup.py[0m
+[0;34m<localhost> PUT /Users/nevzatseferoglu/.ansible/tmp/ansible-local-19127avzmleq9/tmp47ybog4j TO /Users/nevzatseferoglu/.ansible/tmp/ansible-tmp-1683584935.490199-19130-74942800962797/AnsiballZ_setup.py[0m
+[0;34m<localhost> EXEC /bin/sh -c 'chmod u+x /Users/nevzatseferoglu/.ansible/tmp/ansible-tmp-1683584935.490199-19130-74942800962797/ /Users/nevzatseferoglu/.ansible/tmp/ansible-tmp-1683584935.490199-19130-74942800962797/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<localhost> EXEC /bin/sh -c '/opt/homebrew/bin/python3.11 /Users/nevzatseferoglu/.ansible/tmp/ansible-tmp-1683584935.490199-19130-74942800962797/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<localhost> EXEC /bin/sh -c 'rm -f -r /Users/nevzatseferoglu/.ansible/tmp/ansible-tmp-1683584935.490199-19130-74942800962797/ > /dev/null 2>&1 && sleep 0'[0m
+[1;35m[WARNING]: Platform darwin on host localhost is using the discovered Python[0m
+[1;35minterpreter at /opt/homebrew/bin/python3.11, but future installation of another[0m
+[1;35mPython interpreter could change the meaning of that path. See[0m
+[1;35mhttps://docs.ansible.com/ansible-[0m
+[1;35mcore/2.14/reference_appendices/interpreter_discovery.html for more information.[0m
+[0;32mok: [localhost][0m
+
+TASK [Tast1] *******************************************************************
+[1;30mtask path: /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/playbook.yaml:8[0m
+[0;32mok: [localhost] => {[0m
+[0;32m    "msg": "It is the message of Task1"[0m
+[0;32m}[0m
+
+TASK [Tast2] *******************************************************************
+[1;30mtask path: /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/playbook.yaml:11[0m
+[0;32mok: [localhost] => {[0m
+[0;32m    "msg": "It is the message of Task2"[0m
+[0;32m}[0m
+
+TASK [Tast3] *******************************************************************
+[1;30mtask path: /Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/tests/test_ansible/playbook.yaml:14[0m
+[0;32mok: [localhost] => {[0m
+[0;32m    "msg": "It is the message of Task3"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mlocalhost[0m                  : [0;32mok=4   [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

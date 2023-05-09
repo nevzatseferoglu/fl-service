@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI
 
 from .routers import database, ssh
+from .routers.docker import docker
 
 logging.basicConfig(
     filename="uvicorn.log",
@@ -19,3 +20,4 @@ app = FastAPI(debug=True)
 
 app.include_router(ssh.router)
 app.include_router(database.router)
+app.include_router(docker.router)

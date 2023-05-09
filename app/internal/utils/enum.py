@@ -1,6 +1,13 @@
 from enum import Enum
 
 
+class InstallationStatus(str, Enum):
+    ok = "ok"
+    failed = "failed"
+    unreachable = "unreachable"
+    skipped = "skipped"
+
+
 class StatusType(str, Enum):
     """
     Status type.

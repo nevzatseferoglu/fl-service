@@ -2,18 +2,16 @@
   hosts: all
   become: true
   vars:
-    default_container_name: hello-world-test-container
-    default_container_image: hello-world
     ansible_timeout: 2 * 60 # 2 minutes
-
+#
   tasks:
-    - name: Install aptitude
+    - name: state_install_aptitude
       ansible.builtin.apt:
         name: aptitude
         state: present
         update_cache: true
 
-    - name: Install required system packages
+    - name: state_install_required_system_packages
       ansible.builtin.apt:
         pkg:
           - apt-transport-https
@@ -26,22 +24,22 @@
         state: present
         update_cache: true
 
-    - name: Add Docker GPG apt Key
+    - name: state_add_docker_gpg_apt_key
       ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
-    - name: Add Docker Repository
+    - name: state_add_docker_repository
       ansible.builtin.apt_repository:
         repo: deb https://download.docker.com/linux/ubuntu focal stable
         state: present
 
-    - name: Update apt and instal docker-ce
+    - name: state_update_apt_and_install_docker_ce
       ansible.builtin.apt:
         name: docker-ce
         state: present
         update_cache: true
 
-    - name: Install Docker Module for Python
+    - name: state_install_docker_module_for_python
       ansible.builtin.pip:
         name: docker

@@ -23,6 +23,7 @@ sqlalchemy = "^2.0.9"
 ansible-lint = { version = "^6.9.0", markers = "platform_system != 'Windows'" }
 pyyaml = "^6.0"
 pyright = "^1.1.305"
+asyncio = "^3.4.3"
 
 [build-system]
 requires = ["poetry-core"]

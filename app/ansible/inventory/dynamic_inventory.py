@@ -3,6 +3,7 @@ import os
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from ...internal.sql import crud
 from ...internal.sql.crud import get_remote_host_by_ip_address
 from ...internal.utils.ansible import ansible_export_to_yaml, ansible_read_yaml
 from ...internal.utils.enum import FlowerType
@@ -28,6 +29,7 @@ FLOWER_INVENTORY_DICT = {
 
 def add_new_host_to_flower_inventory(
     inventory_dirname: str,
+    host_pattern: str | None,
     ansible_host: str,
     ansible_user: str,
     flower_type: FlowerType,
@@ -60,30 +62,34 @@ def add_new_host_to_flower_inventory(
         err = f"Failed to read inventory file {yaml_file}, check out the logs for more details"
         raise HTTPException(status_code=500, detail=err)
 
-    # generate unique internal host indentifier (relies on the host id (primary key))
-    identifier = f"host_{host.id}"
+    if host_pattern == None:
+        host_pattern = f"host_{host.id}"
+
+    crud.update_remote_host_host_pattern_by_ip_address(
+        db=db, ip_address=ansible_host, host_pattern=host_pattern
+    )
 
     if flower_type == FlowerType.client:
         if (
-            identifier
+            host_pattern
             in content["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"].keys()
         ):
             err = f"Flower client host {ansible_host} already exists in the inventory {yaml_file}"
             raise HTTPException(status_code=409, detail=err)
 
-        content["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"][identifier] = {
+        content["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"][host_pattern] = {
             "ansible_host": ansible_host,
             "ansible_user": ansible_user,
         }
     else:
         if (
-            identifier
+            host_pattern
             in content["all"]["children"][FLOWER_SERVER_GROUP]["hosts"].keys()
         ):
             err = f"Flower server host {ansible_host} already exists in the inventory {yaml_file}"
             raise HTTPException(status_code=409, detail=err)
 
-        content["all"]["children"][FLOWER_SERVER_GROUP]["hosts"][identifier] = {
+        content["all"]["children"][FLOWER_SERVER_GROUP]["hosts"][host_pattern] = {
             "ansible_host": ansible_host,
             "ansible_user": ansible_user,
         }
