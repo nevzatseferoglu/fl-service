@@ -1,16 +1,16 @@
 
 ---
 - name: Test handler playbook
-  hosts: localhost
-  connection: local
-
+  hosts: test_server
+  vars:
+    ansible_ssh_timeout: 60
   tasks:
-    - name: Tast1
+    - name: Task1
       debug:
         msg: "It is the message of Task1"
-    - name: Tast2
+    - name: Task2
       debug:
         msg: "It is the message of Task2"
-    - name: Tast3
+    - name: Task3
       debug:
         msg: "It is the message of Task3"
