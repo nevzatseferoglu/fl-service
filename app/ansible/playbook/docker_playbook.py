@@ -2,7 +2,7 @@ import copy
 
 from ...ansible.inventory.dynamic_inventory import (FLOWER_CLIENTS_GROUP,
                                                     FLOWER_SERVER_GROUP)
-from ...internal.utils.enum import FlowerType
+from ...internal.utils.enum import DOCKER_INSTALLATION_NAME, FlowerType
 
 INSTALL_DOCKER_PLAYBOOK = {
     "name": "Install ansible",
@@ -14,7 +14,7 @@ INSTALL_DOCKER_PLAYBOOK = {
     },
     "tasks": [
         {
-            "name": "Install aptitude",
+            "name": DOCKER_INSTALLATION_NAME.state_install_aptitude,
             "ansible.builtin.apt": {
                 "name": "aptitude",
                 "state": "present",
@@ -22,7 +22,7 @@ INSTALL_DOCKER_PLAYBOOK = {
             },
         },
         {
-            "name": "Install required system packages",
+            "name": DOCKER_INSTALLATION_NAME.state_install_required_system_packages,
             "ansible.builtin.apt": {
                 "pkg": [
                     "apt-transport-https",
@@ -38,21 +38,21 @@ INSTALL_DOCKER_PLAYBOOK = {
             },
         },
         {
-            "name": "Add Docker GPG apt Key",
+            "name": DOCKER_INSTALLATION_NAME.state_add_docker_gpg_apt_key,
             "ansible.builtin.apt_key": {
                 "url": "https://download.docker.com/linux/ubuntu/gpg",
                 "state": "present",
             },
         },
         {
-            "name": "Add Docker Repository",
+            "name": DOCKER_INSTALLATION_NAME.state_add_docker_repository,
             "ansible.builtin.apt_repository": {
                 "repo": "deb https://download.docker.com/linux/ubuntu focal stable",
                 "state": "present",
             },
         },
         {
-            "name": "Update apt and instal docker-ce",
+            "name": DOCKER_INSTALLATION_NAME.state_update_apt_and_install_docker_ce,
             "ansible.builtin.apt": {
                 "name": "docker-ce",
                 "state": "present",
@@ -60,7 +60,7 @@ INSTALL_DOCKER_PLAYBOOK = {
             },
         },
         {
-            "name": "Install Docker Module for Python",
+            "name": DOCKER_INSTALLATION_NAME.state_install_docker_module_for_python,
             "ansible.builtin.pip": {
                 "name": "docker",
             },

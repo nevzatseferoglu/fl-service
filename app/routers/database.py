@@ -85,7 +85,7 @@ def get_remote_hosts_by_contact_info(
     Get a list of remote hosts with the given contact info.
     """
 
-    hosts = crud.get_remote_host_by_contact_info(db=db, contact_info=contact_info)
+    hosts = crud.get_remote_hosts_by_contact_info(db=db, contact_info=contact_info)
     if len(hosts) == 0:
         err = f"No hosts found with contact info {contact_info}"
         logging.error(err)
@@ -108,7 +108,7 @@ def get_remote_host_by_fl_identifier(
     Get a remote hosts with the given FL identifier.
     """
 
-    hosts = crud.get_remote_host_by_fl_identifier(db=db, fl_identifier=fl_identifier)
+    hosts = crud.get_remote_hosts_by_fl_identifier(db=db, fl_identifier=fl_identifier)
     if len(hosts) == 0:
         err = f"No hosts found with FL identifier {fl_identifier}"
         logging.error(err)

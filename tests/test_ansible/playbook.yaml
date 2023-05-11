@@ -1,7 +1,7 @@
 
 ---
 - name: Test handler playbook
-  hosts: test_server
+  hosts: all
   vars:
     ansible_ssh_timeout: 60
   tasks:

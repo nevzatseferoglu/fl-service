@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "6b09c652-e1c2-4f7c-9e9c-f20019e17844", "counter": 6, "stdout": "\u001b[0;34m  executable location = /Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/bin/ansible-playbook\u001b[0m", "start_line": 5, "end_line": 6, "runner_ident": "ddf6056d-d541-47c9-9707-4a5db28173a6", "created": "2023-05-10T17:58:38.133563"}

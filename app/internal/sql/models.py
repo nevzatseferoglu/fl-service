@@ -34,11 +34,11 @@ class RemoteHostDockerState(Base):
     Model for docker state of the remote host.
     """
 
-    __tablename__ = "remote_host_docker_states"
+    __tablename__ = "remote_host_docker_state"
 
     id = Column(Integer, primary_key=True, index=True)
-    host_id = Column(Integer, ForeignKey("remote_hosts.id"))
-    host = relationship("RemoteHost", back_populates="docker_state")
+    host_id = Column(Integer, ForeignKey("remote_host.id"))
+    remote_host = relationship("RemoteHost", back_populates="docker_state")
 
     # each task completion state
     state_install_aptitude = Column(String)

@@ -109,6 +109,11 @@ def copy_ssh_key_to_remote(
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
 
+    if host.host_pattern != None and host.host_pattern.isspace():
+        err = "Invalid host pattern, it cannot contain whitespace characters."
+        logging.error(err)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
+
     if os.path.exists(DEFAULT_SSH_PUBLIC_KEY_PATH) == False:
         err = "SSH public key does not exist!"
         logging.error(err)

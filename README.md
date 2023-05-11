@@ -5,7 +5,6 @@
 - Manuel installation versus, saas installation time improvement will be %70.
 - At least 4 client + 1 server.
 - Face detection algorithm will run at 80% accuracy and new data will improve to 85% percent.
-- Hello
 
 ## Architecture
 
@@ -16,6 +15,7 @@
 
 - Add `ad-hoc` support which wraps the certain operation by doing ad-hoc call to certain hosts.
 - Report missing methods documentations to official repository.
+- Check out how Depedens work.
 
 
 ## Extra linting
