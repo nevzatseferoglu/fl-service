@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
+from ...definitions import ANSIBLE_INVENTORY_DIR
 from ...internal.schema import RemoteHostDockerState
 from ...internal.sql import crud
 from ...internal.utils.enum import InstallationStatus
@@ -82,11 +83,19 @@ async def stream_install_docker_content(ip_address: str, db: Session):
         yield f"{err}{os.linesep}"
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
 
+    inventory_path = os.path.join(ANSIBLE_INVENTORY_DIR, str(host.fl_identifier))
+    if not os.path.exists(inventory_path):
+        err = f"Inventory directory for remote host with ip address {ip_address} not found"
+        yield f"{err}{os.linesep}"
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
+
+    # mock_handler = closure_docker_installation_event_handler(str(host.ip_address), db)
+    # mock_handler()
     # runner_config = {
-    #     "private_data_dir": ANSIBLE_TMP_DIR,
-    #     "inventory":
+    #     "private_data_dir": os.path.join(inventory_path, "tmp"),
+    #     "inventory": inventory_path,
+    #     "playbook": os.path.join(ANSIBLE_PLAYBOOK_DIR, "docker.yml")
     # }
-    # runner = ansible_runner.run()
 
 
 @router.post("/install/{ip_address}", response_class=StreamingResponse)

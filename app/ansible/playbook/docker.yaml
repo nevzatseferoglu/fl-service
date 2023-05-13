@@ -3,7 +3,7 @@
   become: true
   vars:
     ansible_timeout: 2 * 60 # 2 minutes
-#
+
   tasks:
     - name: state_install_aptitude
       ansible.builtin.apt:

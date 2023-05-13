@@ -1,10 +1,9 @@
 import os
-from enum import Enum
 
 ROOT_DIR = f"{os.path.dirname(os.path.abspath(__file__))}"
- 
+ANSIBLE_INVENTORY_DIR = os.path.join(ROOT_DIR, "ansible", "inventory")
+ANSIBLE_PLAYBOOK_DIR = os.path.join(ROOT_DIR, "ansible", "playbook")
 
 
-# TODO : Add useful directory path.
-class AnsibleDirectory(str, Enum):
-    TMP_DIR = os.path.join(ROOT_DIR, "ansible", "tmp")
+# TODO: Design a mechanism which make it possible to reference
+# fl model directory under the inventory file
