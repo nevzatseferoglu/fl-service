@@ -56,7 +56,7 @@ def ping(ip_address: Annotated[str, Path()], db=Depends(database.get_db)):
         "private_data_dir": tmp_path,
         "inventory": inventory_path,
         "playbook": os.path.join(ANSIBLE_PLAYBOOK_DIR, "ping.yaml"),
-        "verbosity": 4,
+        "verbosity": 2,
         "limit": str(host.host_pattern),
     }
     runner = ansible_runner.run(**runner_config)

@@ -1,6 +1,8 @@
+import logging
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from .. import schema
 from ..utils.enum import DOCKER_INSTALLATION_NAME
@@ -118,36 +120,38 @@ def get_remote_host_docker_state_by_ip_address(
 
 
 def update_remote_host_docker_state_by_ip_address(
-    db: Session,
-    ip_address: str,
-    updated_docker_state: schema.RemoteHostDockerState,
+    db: Session, ip_address: str, updated_docker_state: dict
 ):
     try:
+        logging.info("1")
         remote_host = (
             db.query(models.RemoteHost)
+            .options(joinedload(models.RemoteHost.docker_state))
             .filter(
                 models.RemoteHost.ip_address == ip_address,
             )
             .first()
         )
+        logging.info("2")
         if remote_host == None:
             err = f"Remote host with ip address {ip_address} not found."
+            logging.error(err)
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
 
+        logging.info("3")
+
         docker_state_id = remote_host.docker_state.id
-        updated = updated_docker_state.dict()
 
-        update_dict = {
-            getattr(remote_host.docker_state, k): v
-            for k, v in updated.items()
-            if v is not None
-        }
+        logging.info("4")
 
-        if update_dict:
-            db.query(models.RemoteHostDockerState).filter(
-                models.RemoteHostDockerState.id == docker_state_id
-            ).update(update_dict)
-            db.commit()
+        logging.info(f"docker_state_id: {docker_state_id}")
+        logging.info(f"updated_docker_state:{updated_docker_state}")
+        db.query(models.RemoteHostDockerState).filter(
+            models.RemoteHostDockerState.id == docker_state_id
+        ).update(updated_docker_state)
+        logging.info("5")
+        db.commit()
+        logging.info("6")
 
     except SQLAlchemyError as e:
         db.rollback()

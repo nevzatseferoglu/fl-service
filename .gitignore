@@ -138,3 +138,6 @@ room/
 # ignore sqlite
 *.sqlite3
 sql_app.db
+
+# ignore Ansible private-data-dir (tmp)
+**/tmp/

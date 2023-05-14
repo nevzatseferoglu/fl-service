@@ -68,10 +68,6 @@ def add_new_host_to_flower_inventory(
             err = f"Failed to write inventory file {yaml_file}, check out the logs for more details"
             raise HTTPException(status_code=500, detail=err)
 
-    tmp_dir = os.path.join(yaml_dir, "tmp")
-    if os.path.isdir(tmp_dir) == False:
-        os.makedirs(name=tmp_dir, exist_ok=True)
-
     # read the content of the file as a dict then modify rewrite again.
     content = ansible_read_yaml(yaml_file)
     if content == {}:
@@ -97,6 +93,7 @@ def add_new_host_to_flower_inventory(
         content["all"]["children"][FLOWER_CLIENTS_GROUP]["hosts"][host_pattern] = {
             "ansible_host": ansible_host,
             "ansible_user": ansible_user,
+            "ansible_become_password": host.ssh_password,
         }
     else:
         if (
@@ -109,6 +106,7 @@ def add_new_host_to_flower_inventory(
         content["all"]["children"][FLOWER_SERVER_GROUP]["hosts"][host_pattern] = {
             "ansible_host": ansible_host,
             "ansible_user": ansible_user,
+            "ansible_become_password": host.ssh_password,
         }
 
     if not ansible_export_to_yaml(content, yaml_file):

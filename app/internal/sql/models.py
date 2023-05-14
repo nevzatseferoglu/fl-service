@@ -25,7 +25,11 @@ class RemoteHost(Base):
     description = Column(String)
     contact_info = Column(String)
     fl_identifier = Column(String, unique=True, index=True)
-    docker_state = relationship("RemoteHostDockerState", back_populates="remote_host")
+    docker_state = relationship(
+        "RemoteHostDockerState",
+        back_populates="remote_host",
+        uselist=False,
+    )
     host_pattern = Column(String)
 
 

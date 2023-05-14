@@ -1,8 +1,6 @@
-- name: Install ansible
+- name: Install docker
   hosts: all
-  become: true
-  vars:
-    ansible_timeout: 2 * 60 # 2 minutes
+  become: yes
 
   tasks:
     - name: state_install_aptitude
@@ -10,6 +8,8 @@
         name: aptitude
         state: present
         update_cache: true
+      async: 300
+      poll: 5
 
     - name: state_install_required_system_packages
       ansible.builtin.apt:
@@ -23,23 +23,33 @@
           - python3-setuptools
         state: present
         update_cache: true
+      async: 300
+      poll: 5
 
     - name: state_add_docker_gpg_apt_key
       ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
+      async: 300
+      poll: 5
 
     - name: state_add_docker_repository
       ansible.builtin.apt_repository:
         repo: deb https://download.docker.com/linux/ubuntu focal stable
         state: present
+      async: 300
+      poll: 5
 
     - name: state_update_apt_and_install_docker_ce
       ansible.builtin.apt:
         name: docker-ce
         state: present
         update_cache: true
+      async: 300
+      poll: 5
 
     - name: state_install_docker_module_for_python
       ansible.builtin.pip:
         name: docker
+      async: 300
+      poll: 5
