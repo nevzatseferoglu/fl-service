@@ -20,6 +20,7 @@ jobs:
     needs: linting
     runs-on: "ubuntu-latest"
     steps:
+
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Set up python 3.10.7
@@ -42,7 +43,14 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install library
         run: poetry install --no-interaction
-      - name: Run tests
+      - name: Generate html page
         run: |
           source .venv/bin/activate
           python ./doc.py
+      - name: Push to repository
+        run: |
+          git config --global user.email "nevzatseferoglu@github.com"
+          git config --global user.name "Nevzat"
+          git add doc.html
+          git commit -m "gh-workflow: Add generated doc.html"
+          git push
