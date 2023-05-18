@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Flower powered federated learning service."
 authors = ["Nevzat Seferoglu <nevzatseferoglu@gmail.com>"]
 readme = "README.md"
-packages = [{include = "fl_service"}]
+# packages = [{include = "fl_service"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
