@@ -46,7 +46,9 @@ def closure_docker_installation_event_handler(
                 crud.update_remote_host_docker_state_by_ip_address(
                     db=db,
                     ip_address=ip_address,
-                    updated_docker_state={str(data["event_data"]["task"]): InstallationStatus.ok},
+                    updated_docker_state={
+                        str(data["event_data"]["task"]): InstallationStatus.ok
+                    },
                 )
 
                 info = f"Database updated..."
@@ -110,7 +112,6 @@ def closure_docker_installation_event_handler(
                 logging.info(info)
         return True
 
-    
     return docker_installation_event_handler
 
 
