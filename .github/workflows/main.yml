@@ -47,3 +47,8 @@ jobs:
         run: |
           source .venv/bin/activate
           python ./doc.py
+      - name: Push to repository
+        run: |
+          git add doc.html
+          git commit -m "gh-workflow: Add generated doc.html"
+          git push
