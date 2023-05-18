@@ -1,8 +1,9 @@
+
 # fl-service
 
 API which tailored to the needs of data scientists. The interface streamlines communication with remote hosts through the use of service endpoints, allowing for seamless API-based interactions. These endpoints empower users to initiate, terminate, and manage flower federated learning clusters, ensuring the preservation of a unified strategy across the system's architecture.
 
-## Architecture
+API documentation: https://fl-service-api-doc.netlify.app/
 
 ![0.1.0](./assets/architecture.png)
 
