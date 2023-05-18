@@ -46,11 +46,11 @@ jobs:
       - name: Generate html page
         run: |
           source .venv/bin/activate
-          python ./doc/generate.py
+          python ./generate-api-doc.py
       - name: Push to repository
         run: |
           git config --global user.email "nevzatseferoglu@github.com"
           git config --global user.name "Nevzat"
-          git add ./doc/index.html
+          git add doc/index.html
           git commit -m "gh-workflow: Add generated doc.html"
           git push
