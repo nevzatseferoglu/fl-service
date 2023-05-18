@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class DOCKER_INSTALLATION_NAME(str, Enum):
     state_install_aptitude = "state_install_aptitude"
     state_install_required_system_packages = "state_install_required_system_packages"

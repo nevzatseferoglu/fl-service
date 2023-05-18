@@ -25,9 +25,9 @@
 
 ## ToDo
 
-- Change database in a way that it can manage more than one fl algorithm. That mean there will be more than one (server/clients) configuration.
-- Change database type to client/server arch.
-- Update architecture diagram.
-- Draw sequence diagram.
+- Change database in a way that it can manage more than one fl algorithm. That mean there will be more than one (server/clients) configuration
+- Change database type to client/server arch
+- Update architecture diagram
+- Draw sequence diagram
 - Documentation
-
+- Setting request path, query parameters validation rules
