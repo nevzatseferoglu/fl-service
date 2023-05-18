@@ -46,7 +46,7 @@ jobs:
       - name: Generate html page
         run: |
           source .venv/bin/activate
-          python ./generate-api-doc.py
+          python generate-api-doc.py
       - name: Push to repository
         run: |
           git config --global user.email "nevzatseferoglu@github.com"
