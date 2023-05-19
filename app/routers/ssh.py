@@ -31,7 +31,9 @@ DEFAULT_SSH_PATH = os.path.expanduser("~/.ssh")
 
 @router.post("/generate_ssh_key_pair", response_model=Status)
 def generate_ssh_key_pair() -> Any:
-    """Generate SSH key pair for the server."""
+    """
+    Generate SSH key pair for the API running environment.
+    """
 
     if os.path.exists(DEFAULT_SSH_PRIVATE_KEY_PATH):
         err = "SSH key already exists!"
@@ -88,7 +90,11 @@ def copy_ssh_key_to_remote(
     # TODO: Convert into async function for the improving performance
     # TODO: Make a batch operation for bunch of operations (important)
 
-    """Copies the SSH key to the remote host."""
+    """
+    Copies the SSH key to the remote host.
+    
+    :param host: Remote host information.
+    """
 
     if validate_ip_address(host.ip_address) == False:
         err = f"Invalid IP address: {host.ip_address}"
