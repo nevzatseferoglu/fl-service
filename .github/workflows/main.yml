@@ -52,7 +52,7 @@ jobs:
       - name: Push to repository
         run: |
           git config --global user.email "nevzatseferoglu@github.com"
-          git config --global user.name "Nevzat"
+          git config --global user.name "Github"
           git add doc/index.html
           git diff --staged --quiet || git commit -m "gh-workflow: Add generated index.html"
           git push
