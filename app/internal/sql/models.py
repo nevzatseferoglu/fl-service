@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -24,7 +24,7 @@ class RemoteHost(Base):
     ssh_key_passphrase = Column(String)
     description = Column(String)
     contact_info = Column(String)
-    fl_identifier = Column(String, unique=True, index=True)
+    fl_identifier = Column(String)
     docker_state = relationship(
         "RemoteHostDockerState",
         back_populates="remote_host",
@@ -51,4 +51,4 @@ class RemoteHostDockerState(Base):
     state_add_docker_repository = Column(String)
     state_update_apt_and_install_docker_ce = Column(String)
     state_install_docker_module_for_python = Column(String)
-    general_state = Column(Boolean)
+    state_check_docker_command = Column(String)

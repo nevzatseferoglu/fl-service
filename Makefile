@@ -1,4 +1,4 @@
-.PHONY: run kill docker-build docker-run docker-stop docker-rm lint test test-cov clean
+.PHONY: run kill docker-build docker-run docker-stop docker-rm lint clear-records test test-cov clean
 
 APP_NAME=fl-service
 PORT=8000
@@ -20,7 +20,6 @@ run:
 
 kill:
 	ps aux | grep uvicorn | grep -v grep | awk '{print $$2}' | xargs kill -SIGINT
-	rm sql_app.db 
 
 # docker-build:
 # 	docker build -t ${DOCKER_IMAGE_NAME} .
@@ -38,6 +37,10 @@ lint:
 	autoflake --in-place --remove-all-unused-imports --recursive .
 	black .
 	isort .
+
+clear-records:
+	rm -d sql_app.db 2>/dev/null || true
+	find ./app/ansible/inventory -mindepth 1 -type d -exec rm -rf {} +
 
 # test:
 # 	${TEST_CMD}

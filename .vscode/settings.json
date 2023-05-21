@@ -1,5 +1,6 @@
 {
     "yaml.schemas": {
         "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/inventory.json": "file:///Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/app/ansible/inventory/inventory.yaml"
-    }
+    },
+    "ansible.python.interpreterPath": "/Users/nevzatseferoglu/Library/Caches/pypoetry/virtualenvs/fl-service-mVGCKuWe-py3.10/bin/python"
 }

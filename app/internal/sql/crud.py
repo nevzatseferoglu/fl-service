@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
@@ -9,8 +7,71 @@ from ..utils.enum import DOCKER_INSTALLATION_NAME
 from . import models
 
 # NOTE:
-# - Don't use logging in crud functions. Instead, use logging in the calling function.
 # - All crud functions should throw appropriate HTTPException instead of SQLAlchemyError when an error occurs.
+
+# def from_task_enum_to_model_column(name: str) -> Column | None:
+#     match name:
+#         case DOCKER_INSTALLATION_NAME.state_install_aptitude:
+#             return models.RemoteHostDockerState.state_install_aptitude
+#         case DOCKER_INSTALLATION_NAME.state_install_required_system_packages:
+#             return models.RemoteHostDockerState.state_install_required_system_packages
+#         case DOCKER_INSTALLATION_NAME.state_add_docker_gpg_apt_key:
+#             return models.RemoteHostDockerState.state_add_docker_gpg_apt_key
+#         case DOCKER_INSTALLATION_NAME.state_add_docker_repository:
+#             return models.RemoteHostDockerState.state_add_docker_repository
+#         case DOCKER_INSTALLATION_NAME.state_update_apt_and_install_docker_ce:
+#             return models.RemoteHostDockerState.state_update_apt_and_install_docker_ce
+#         case DOCKER_INSTALLATION_NAME.state_install_docker_module_for_python:
+#             return models.RemoteHostDockerState.state_install_docker_module_for_python
+#         case DOCKER_INSTALLATION_NAME.state_check_docker_command:
+#             return models.RemoteHostDockerState.state_check_docker_command
+#         case _:
+#             return None
+
+
+def get_remote_host_docker_state(db: Session, ip_address: str) -> dict:
+    "Returns the result of given task, if the task does not exist returns an empty string"
+
+    try:
+        remote_host = (
+            db.query(models.RemoteHost)
+            .options(joinedload(models.RemoteHost.docker_state))
+            .filter(
+                models.RemoteHost.ip_address == ip_address,
+            )
+            .first()
+        )
+        if remote_host == None:
+            err = f"Remote host with ip address {ip_address} not found"
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
+
+        docker_state_id = remote_host.docker_state.id
+
+        result = (
+            db.query(models.RemoteHostDockerState)
+            .filter(models.RemoteHostDockerState.id == docker_state_id)
+            .first()
+        )
+
+        if result == None:
+            err = f"Remote host docker state with id {docker_state_id} not found"
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
+
+        return {
+            DOCKER_INSTALLATION_NAME.state_install_aptitude: result.state_install_aptitude,
+            DOCKER_INSTALLATION_NAME.state_install_required_system_packages: result.state_install_required_system_packages,
+            DOCKER_INSTALLATION_NAME.state_add_docker_gpg_apt_key: result.state_add_docker_gpg_apt_key,
+            DOCKER_INSTALLATION_NAME.state_add_docker_repository: result.state_add_docker_repository,
+            DOCKER_INSTALLATION_NAME.state_update_apt_and_install_docker_ce: result.state_update_apt_and_install_docker_ce,
+            DOCKER_INSTALLATION_NAME.state_install_docker_module_for_python: result.state_install_docker_module_for_python,
+            DOCKER_INSTALLATION_NAME.state_check_docker_command: result.state_check_docker_command,
+        }
+
+    except SQLAlchemyError as e:
+        err = f"SQLAlchemy error occurred while getting remote host docker state: {e}"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
+        )
 
 
 def get_remote_hosts_by_contact_info(
@@ -70,60 +131,10 @@ def get_remote_host_by_ip_address(db: Session, ip_address: str) -> models.Remote
         )
 
 
-def get_remote_host_by_host_pattern(
-    db: Session, fl_identifier: str, host_pattern: str
-) -> models.RemoteHost:
-    """
-    Returns a remote host with the given host pattern.
-    """
-
-    try:
-        return (
-            db.query(models.RemoteHost)
-            .filter(
-                models.RemoteHost.fl_identifier == fl_identifier,
-                models.RemoteHost.host_pattern == host_pattern,
-            )
-            .first()
-        )
-    except SQLAlchemyError as e:
-        err = (
-            f"SQLAlchemy error occurred while getting remote host by host pattern: {e}"
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
-        )
-
-
-def get_remote_host_docker_state_by_ip_address(
-    db: Session, ip_address: str
-) -> models.RemoteHostDockerState | None:
-    """
-    Get docker state of a remote host by ip address.
-    """
-
-    try:
-        remote_host = (
-            db.query(models.RemoteHost)
-            .filter(models.RemoteHost.ip_address == ip_address)
-            .first()
-        )
-        if remote_host != None:
-            return remote_host.docker_state
-        return None
-
-    except SQLAlchemyError as e:
-        err = f"SQLAlchemy error occurred while getting docker state by ip address: {e}"
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
-        )
-
-
 def update_remote_host_docker_state_by_ip_address(
     db: Session, ip_address: str, updated_docker_state: dict
-):
+) -> None:
     try:
-        logging.info("1")
         remote_host = (
             db.query(models.RemoteHost)
             .options(joinedload(models.RemoteHost.docker_state))
@@ -132,75 +143,17 @@ def update_remote_host_docker_state_by_ip_address(
             )
             .first()
         )
-        logging.info("2")
         if remote_host == None:
-            err = f"Remote host with ip address {ip_address} not found."
-            logging.error(err)
+            err = f"Remote host with ip address {ip_address} not found"
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
-
-        logging.info("3")
 
         docker_state_id = remote_host.docker_state.id
 
-        logging.info("4")
-
-        logging.info(f"docker_state_id: {docker_state_id}")
-        logging.info(f"updated_docker_state:{updated_docker_state}")
         db.query(models.RemoteHostDockerState).filter(
             models.RemoteHostDockerState.id == docker_state_id
         ).update(updated_docker_state)
-        logging.info("5")
         db.commit()
-        logging.info("6")
 
-    except SQLAlchemyError as e:
-        db.rollback()
-        err = f"SQLAlchemy error occurred while updating docker state by host pattern: {e}"
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
-        )
-    except AttributeError as e:
-        db.rollback()
-        err = (
-            f"Attribute error occurred while updating docker state by host pattern: {e}"
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
-        )
-
-
-def update_remote_host_docker_state_by_host_pattern(
-    db: Session,
-    fl_identifier: str,
-    host_pattern: str,
-    updated_docker_state: schema.RemoteHostDockerState,
-):
-    try:
-        remote_host = (
-            db.query(models.RemoteHost)
-            .filter(
-                models.RemoteHost.fl_identifier == fl_identifier,
-                models.RemoteHost.host_pattern == host_pattern,
-            )
-            .first()
-        )
-
-        if not remote_host:
-            err = f"Remote host with ip address {host_pattern} not found."
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
-
-        docker_state_id = remote_host.docker_state.id
-        updated = updated_docker_state.dict()
-
-        update_dict = {
-            getattr(remote_host.docker_state, k): v
-            for k, v in updated.items()
-            if v is not None
-        }
-
-        if update_dict:
-            db.query(models.RemoteHostDockerState).filter().update(update_dict)
-            db.commit()
     except SQLAlchemyError as e:
         db.rollback()
         err = f"SQLAlchemy error occurred while updating docker state by host pattern: {e}"
@@ -276,7 +229,7 @@ def register_remote_host(db: Session, remote_host: schema.RemoteHostCreate):
             DOCKER_INSTALLATION_NAME.state_add_docker_repository: "",
             DOCKER_INSTALLATION_NAME.state_update_apt_and_install_docker_ce: "",
             DOCKER_INSTALLATION_NAME.state_install_docker_module_for_python: "",
-            "general_state": False,
+            DOCKER_INSTALLATION_NAME.state_check_docker_command: "",
         }
 
         db_remote_host_docker_state = models.RemoteHostDockerState(

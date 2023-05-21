@@ -11,11 +11,14 @@ API which tailored to the needs of data scientists. The interface streamlines co
 
 - [x] Change the database in a way that it can manage more than one fl algorithm. That means there will be more than one (server/clients) configuration.
 - [x] Update architecture diagram
+- [ ] The docstring for a function or method should summarize its behavior and document its arguments, return value(s), side effects, exceptions raised, and restrictions on when it can be called (all if applicable).
 - [ ] Add diagrams (sequence)
 - [ ] Set request path, query parameters validation.
 - [ ] Introduce usa-case scenario and set up instructions of the host machine.
 - [ ] Incrase observability.
 - [ ] Add missing informations to the doc.
+- [ ] Mention about contraints such as recorded host can participate a single federated learning.
+- [ ] Target host machine might require key file to connect through paramiko. 
 
 ## Research
 
@@ -23,6 +26,8 @@ API which tailored to the needs of data scientists. The interface streamlines co
 - [ ] API security.
 - [ ] Making appropriate operations async.
 - [ ] Realtime feedback from the endpoints.
+- [ ] File locking
+
 
 ## Success Criteria
 
@@ -33,4 +38,11 @@ API which tailored to the needs of data scientists. The interface streamlines co
 ### Linting
 
 pyright --outputjson . | jq '.summary | {errorCount, warningCount} | values'
+
+## AWS
+
+Register host:
+
+- curl -X POST https://shaggy-kiwis-happen.loca.lt/ssh/copy_ssh_key_to_remote_host -H "Content-Type: application/json" -d '{"contact_info": "nevzatseferoglu@gmail.com", "ip_address": "54.196.187.0", "ssh_username": "ubuntu", "ssh_password": "", "flower_type": "client", "fl_identifier": "test_model" }'
+- curl -X POST https://wicked-ends-pay.loca.lt/docker/install
 

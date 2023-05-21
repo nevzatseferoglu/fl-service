@@ -3,6 +3,7 @@ import os
 import subprocess
 from typing import Annotated, Any
 
+
 import paramiko
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -11,9 +12,10 @@ from app.ansible.inventory import dynamic_inventory
 from app.internal.schema import RemoteHostCreate, Status, StatusType
 from app.internal.sql import crud
 from app.internal.utils.enum import OsType
-from app.internal.utils.ssh import command_exists
+from app.internal.utils.ssh import validate_command
 from app.internal.utils.validator import validate_ip_address
 from app.routers.database import get_db
+
 
 router = APIRouter(
     prefix="/ssh",
@@ -40,10 +42,10 @@ def generate_ssh_key_pair() -> Any:
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=err)
 
-    if os.path.exists(DEFAULT_SSH_PATH) == False:
+    if not os.path.exists(DEFAULT_SSH_PATH):
         os.makedirs(DEFAULT_SSH_PATH, exist_ok=True)
 
-    if not command_exists("ssh-keygen"):
+    if not validate_command("ssh-keygen"):
         err = "ssh-keygen command not found!"
         logging.error(err)
         raise HTTPException(
@@ -92,11 +94,11 @@ def copy_ssh_key_to_remote(
 
     """
     Copies the SSH key to the remote host.
-    
+
     :param host: Remote host information.
     """
 
-    if validate_ip_address(host.ip_address) == False:
+    if not validate_ip_address(host.ip_address):
         err = f"Invalid IP address: {host.ip_address}"
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
@@ -120,7 +122,7 @@ def copy_ssh_key_to_remote(
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
 
-    if os.path.exists(DEFAULT_SSH_PUBLIC_KEY_PATH) == False:
+    if not os.path.exists(DEFAULT_SSH_PUBLIC_KEY_PATH):
         err = "SSH public key does not exist!"
         logging.error(err)
         raise HTTPException(
@@ -145,9 +147,10 @@ def copy_ssh_key_to_remote(
         with open(DEFAULT_SSH_PUBLIC_KEY_PATH, "r") as f:
             content = f.read()
 
-        _, _, stderr = client.exec_command(
-            f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
-        )
+        cmd = f'grep -q "{content}" ~/.ssh/authorized_keys || echo "{content}" >> ~/.ssh/authorized_keys'
+        logging.info(f"{host.ip_address}: {cmd}")
+
+        _, _, stderr = client.exec_command(cmd)
 
         stderr_output = stderr.read().decode("utf-8")
         if stderr_output:

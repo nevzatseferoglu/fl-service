@@ -20,6 +20,17 @@ router = APIRouter(
 )
 
 
+@router.get("/states/{ip_address}")
+def docker_states(ip_address: Annotated[str, Path()], db: Session = Depends(get_db)):
+    logging.info(f"Validating ip address {ip_address}...")
+    if not validate_ip_address(ip_address):
+        err = f"IP address {ip_address} is not valid"
+        logging.error(err)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
+
+    return crud.get_remote_host_docker_state(db=db, ip_address=ip_address)
+
+
 def closure_docker_installation_event_handler(
     ip_address: str, db: Session = Depends(get_db)
 ):
@@ -156,10 +167,9 @@ def install_docker(
     runner_config = {
         "private_data_dir": os.path.join(inventory_path, "tmp"),
         "inventory": os.path.join(inventory_path, f"{host.fl_identifier}.yaml"),
-        "playbook": os.path.join(ANSIBLE_PLAYBOOK_DIR, "docker.yaml"),
+        "playbook": os.path.join(ANSIBLE_PLAYBOOK_DIR, "docker_ubuntu_focal.yaml"),
         "verbosity": 4,
         "limit": str(host.host_pattern),
-        "passwords": {"become_pass": str(host.ssh_password)},
         "event_handler": handler,
     }
 

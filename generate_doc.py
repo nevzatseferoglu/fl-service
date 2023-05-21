@@ -5,6 +5,7 @@ Written by https://github.com/pawamoy
 """
 
 import json
+
 from app.main import app
 
 HTML_TEMPLATE = """<!DOCTYPE html>

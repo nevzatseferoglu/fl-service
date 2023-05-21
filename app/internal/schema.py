@@ -59,7 +59,7 @@ class RemoteHostDockerState(BaseModel):
     state_add_docker_repository: str
     state_update_apt_and_install_docker_ce: str
     state_install_docker_module_for_python: str
-    general_state: str
+    state_check_docker_command: str
 
     class Config:
         orm_mode = True

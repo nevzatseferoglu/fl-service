@@ -8,6 +8,7 @@ class DOCKER_INSTALLATION_NAME(str, Enum):
     state_add_docker_repository = "state_add_docker_repository"
     state_update_apt_and_install_docker_ce = "state_update_apt_and_install_docker_ce"
     state_install_docker_module_for_python = "state_install_docker_module_for_python"
+    state_check_docker_command = "state_check_docker_command"
 
 
 class InstallationStatus(str, Enum):

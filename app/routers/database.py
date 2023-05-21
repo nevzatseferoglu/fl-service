@@ -59,7 +59,7 @@ def get_remote_host_by_ip_address(
     Get a remote host with the given IP address.
     """
 
-    if validate_ip_address(ip_address) == False:
+    if not validate_ip_address(ip_address):
         err = f"Invalid IP address: {ip_address}"
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)

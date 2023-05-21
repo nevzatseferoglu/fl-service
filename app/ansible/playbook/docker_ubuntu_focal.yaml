@@ -53,3 +53,7 @@
         name: docker
       async: 300
       poll: 5
+
+    - name: state_check_docker_command
+      command: docker --version
+

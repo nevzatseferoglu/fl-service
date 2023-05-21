@@ -3,7 +3,7 @@ import os
 import subprocess
 
 
-def command_exists(cmd: str) -> bool:
+def validate_command(cmd: str) -> bool:
     """
     Check if a command exists in the system path.
     """

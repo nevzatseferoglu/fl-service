@@ -33,6 +33,12 @@ app.include_router(docker.router)
 
 @app.get("/ping/{ip_address}")
 def ping(ip_address: Annotated[str, Path()], db=Depends(database.get_db)):
+    """
+    Ping a remote host with IPAddress.
+
+    Given IPAddress must be already present in the database.
+    """
+
     host = crud.get_remote_host_by_ip_address(db=db, ip_address=ip_address)
     if host == None:
         err = f"Remote host with ip address {ip_address} not found in database"
@@ -43,13 +49,13 @@ def ping(ip_address: Annotated[str, Path()], db=Depends(database.get_db)):
         ANSIBLE_INVENTORY_DIR, str(host.fl_identifier), f"{host.fl_identifier}.yaml"
     )
     if not os.path.exists(inventory_path):
-        err = f"Inventory directory for remote host with ip address {ip_address} not found"
+        err = f"Inventory file for {host.fl_identifier} not found at {inventory_path}"
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
 
     tmp_path = os.path.join(ANSIBLE_INVENTORY_DIR, "ping-tmp")
     if os.path.exists(tmp_path):
-        shutil.rmtree(tmp_path)
+        shutil.rmtree(tmp_path, ignore_errors=True)
     os.makedirs(os.path.join(ANSIBLE_INVENTORY_DIR, "ping-tmp"), exist_ok=True)
 
     runner_config = {
@@ -65,11 +71,11 @@ def ping(ip_address: Annotated[str, Path()], db=Depends(database.get_db)):
         err = f"Ansible runner failed with status {runner.status}"
         logging.error(err)
         if os.path.exists(tmp_path):
-            shutil.rmtree(tmp_path)
+            shutil.rmtree(tmp_path, ignore_errors=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
         )
     else:
         if os.path.exists(tmp_path):
-            shutil.rmtree(tmp_path)
+            shutil.rmtree(tmp_path, ignore_errors=True)
         return Status(status=StatusType.success, description="Ping successful!")
