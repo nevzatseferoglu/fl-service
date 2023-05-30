@@ -29,7 +29,7 @@ def get_db():
         db.close()
 
 
-@router.get("/")
+@router.get("")
 def get_remote_hosts(db: Session = Depends(get_db)) -> Any:
     """
     Get all remote hosts.
@@ -77,7 +77,7 @@ def get_remote_host_by_ip_address(
     }
 
 
-@router.get("/contact_info/{contact_info}")
+@router.get("/contact-info/{contact_info}")
 def get_remote_hosts_by_contact_info(
     contact_info: Annotated[str, Path()], db: Session = Depends(get_db)
 ) -> Any:
@@ -85,6 +85,7 @@ def get_remote_hosts_by_contact_info(
     Get a list of remote hosts with the given contact info.
     """
 
+    logging.info(f"Getting remote hosts with contact info {contact_info}")
     hosts = crud.get_remote_hosts_by_contact_info(db=db, contact_info=contact_info)
     if len(hosts) == 0:
         err = f"No hosts found with contact info {contact_info}"
@@ -100,7 +101,7 @@ def get_remote_hosts_by_contact_info(
     ]
 
 
-@router.get("/fl_identifier/{fl_identifier}")
+@router.get("/fl-identifier/{fl_identifier}")
 def get_remote_host_by_fl_identifier(
     fl_identifier: Annotated[str, Path()], db: Session = Depends(get_db)
 ) -> Any:

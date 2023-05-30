@@ -3,7 +3,6 @@ import os
 import subprocess
 from typing import Annotated, Any
 
-
 import paramiko
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -15,7 +14,6 @@ from app.internal.utils.enum import OsType
 from app.internal.utils.ssh import validate_command
 from app.internal.utils.validator import validate_ip_address
 from app.routers.database import get_db
-
 
 router = APIRouter(
     prefix="/ssh",
@@ -31,7 +29,7 @@ DEFAULT_SSH_PATH = os.path.expanduser("~/.ssh")
 # - All endpoints validates given host is in the inventory before doing any operation, if needed.
 
 
-@router.post("/generate_ssh_key_pair", response_model=Status)
+@router.post("/generate-ssh-key-pair", response_model=Status)
 def generate_ssh_key_pair() -> Any:
     """
     Generate SSH key pair for the API running environment.
@@ -85,7 +83,7 @@ def generate_ssh_key_pair() -> Any:
     )
 
 
-@router.post("/copy_ssh_key_to_remote_host", response_model=Status)
+@router.post("/copy-ssh-key-to-remote-host", response_model=Status)
 def copy_ssh_key_to_remote(
     host: Annotated[RemoteHostCreate, Body()], db: Session = Depends(get_db)
 ) -> Any:
@@ -95,7 +93,7 @@ def copy_ssh_key_to_remote(
     """
     Copies the SSH key to the remote host.
 
-    :param host: Remote host information.
+    host: Remote host information.
     """
 
     if not validate_ip_address(host.ip_address):
