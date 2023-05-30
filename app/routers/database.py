@@ -9,8 +9,8 @@ from app.internal.sql.database import SesssionLocal, engine
 from app.internal.utils.validator import validate_ip_address
 
 router = APIRouter(
-    prefix="/remote_hosts",
-    tags=["remote_hosts"],
+    prefix="/remote-hosts",
+    tags=["remote-hosts"],
 )
 
 models.Base.metadata.create_all(bind=engine)
