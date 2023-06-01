@@ -179,7 +179,7 @@ def install_docker(
             status=StatusType.success, description="Ansible playbook run successfully"
         )
     else:
-        return Status(
-            status=StatusType.error,
-            description="Ansible playbook run failed, check out the database to figure out which task(s) failed!",
+        err = "Ansible docker installation playbook failed!"
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err
         )
