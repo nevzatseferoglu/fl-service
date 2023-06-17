@@ -11,7 +11,7 @@ from .internal.schema import Status
 from .internal.sql import crud
 from .internal.utils.enum import StatusType
 from .routers import database, ssh
-from .routers.docker import docker
+from .routers.docker import docker, upload
 
 logging.basicConfig(
     filename="uvicorn.log",
@@ -29,6 +29,7 @@ app = FastAPI(debug=True)
 app.include_router(ssh.router)
 app.include_router(database.router)
 app.include_router(docker.router)
+app.include_router(upload.router)
 
 
 @app.get("/ping/{ip_address}")

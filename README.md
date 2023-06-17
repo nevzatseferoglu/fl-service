@@ -46,3 +46,10 @@ Register host:
 - curl -X POST https://shaggy-kiwis-happen.loca.lt/ssh/copy_ssh_key_to_remote_host -H "Content-Type: application/json" -d '{"contact_info": "nevzatseferoglu@gmail.com", "ip_address": "54.196.187.0", "ssh_username": "ubuntu", "ssh_password": "", "flower_type": "client", "fl_identifier": "test_model" }'
 - curl -X POST https://wicked-ends-pay.loca.lt/docker/install
 
+## Uploading multiple files
+
+`curl -X POST "http://localhost:8000/docker/upload-source-files/" \
+-H "Content-Type: multipart/form-data" \
+-F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/uvicorn.log \
+-F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/timeout.error \
+-F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/aws-key.pem`
