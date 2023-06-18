@@ -1,0 +1,16 @@
+- name: Deploy given docker image
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: 
+    community.docker.docker_container:
+      name: {}
+      image: {}
+      mounts:
+        type: bind
+        read_only: true
+        source: {}
+        target: /app/data/
+    async: 600
+    poll: 5

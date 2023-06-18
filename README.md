@@ -53,3 +53,11 @@ Register host:
 -F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/uvicorn.log \
 -F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/timeout.error \
 -F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/aws-key.pem`
+
+`curl -X POST "http://localhost:8000/docker/upload-source-files/192.168.1.105/pytorch/" \
+-H "Content-Type: multipart/form-data" \
+-F file=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/171044024.zip`
+
+`curl -X POST "http://localhost:8000/docker/upload-source-files/192.168.1.105/pytorch/amd64/" \
+-H "Content-Type: multipart/form-data" \
+-F file=@/Users/nevzatseferoglu/Desktop/flower/example-project/project-source.zip`

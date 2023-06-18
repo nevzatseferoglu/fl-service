@@ -23,7 +23,6 @@ logging.basicConfig(
 
 logging.info("Starting a fresh uvicorn!")
 
-
 app = FastAPI(debug=True)
 
 app.include_router(ssh.router)

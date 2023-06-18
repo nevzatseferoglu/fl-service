@@ -87,9 +87,6 @@ def generate_ssh_key_pair() -> Any:
 def copy_ssh_key_to_remote(
     host: Annotated[RemoteHostCreate, Body()], db: Session = Depends(get_db)
 ) -> Any:
-    # TODO: Convert into async function for the improving performance
-    # TODO: Make a batch operation for bunch of operations (important)
-
     """
     Copies the SSH key to the remote host.
 
