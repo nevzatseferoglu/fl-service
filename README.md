@@ -13,7 +13,7 @@ See: Command line client from **[here](https://github.com/nevzatseferoglu/flsvc)
 ## Docker installation, image generation and deployment
 
 <img src="./assets/ansible-playbook.png" alt="Docker installation with callback execution" style="width:20%;">
-<img src="./assets/docker-diagram.png" alt="Client image generation and deployment" style="width:75%;">
+<img src="./assets/docker-diagram.png" alt="Client image generation and deployment" style="width:70%;">
 
 
 ## Upload source file to turn into docker image
