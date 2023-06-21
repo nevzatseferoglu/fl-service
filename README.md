@@ -5,7 +5,62 @@
 
 API which tailored to the needs of data scientists. The interface streamlines communication with remote hosts through the use of service endpoints, allowing for seamless API-based interactions. These endpoints empower users to initiate, terminate, and manage flower federated learning clusters, ensuring the preservation of a unified strategy across the system's architecture.
 
-![0.1.0](./assets/architecture.png)
+See: Command line client from **[here](https://github.com/nevzatseferoglu/flsvc)**.
+
+<img src="./assets/architecture.png" alt="v0.1.0" width="900" height="500">
+
+
+## Docker installation, image generation and deployment
+
+<img src="./assets/ansible-playbook.png" alt="Docker installation with callback execution" style="width:20%;">
+<img src="./assets/docker-diagram.png" alt="Client image generation and deployment" style="width:75%;">
+
+
+## Upload source file to turn into docker image
+
+- Request template;
+
+`curl -X POST "http://localhost:8000/docker/upload-source-files/ip_address/pytorch/" \
+-H "Content-Type: multipart/form-data" \
+-F file=@absolute_path_to_souce_zip_file`
+
+- Example;
+
+`curl -X POST "http://localhost:8000/docker/upload-source-files/192.168.1.105/pytorch/" \
+-H "Content-Type: multipart/form-data" \
+-F file=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/171044024.zip`
+
+## Starting deployment
+
+- Request template;
+
+`curl -X POST "http://localhost:8000/docker/deploy/ip_address/"`
+
+- Example;
+
+`curl -X POST "http://localhost:8000/docker/deploy/192.168.1.105/"`
+
+### Makefile commands
+
+- `make run`
+    Run the server on port `:8000`. It can be changed through makefile.
+
+- `make kill`
+    Kill the running server process.
+
+- `make lint`
+    Apply code formatting, importing sorting and linting.
+
+## Research
+
+- [ ] Determine whether file locking is required.
+
+## Success Criteria
+
+- Manuel installation versus, saas installation time improvement will be %70. **(satisfied)**
+- At least 4 client + 1 server. **(satisfied)**
+- Face detection algorithm will run at 80% accuracy and new data will improve to 85% percent.
+
 
 ## ToDo
 
@@ -20,44 +75,3 @@ API which tailored to the needs of data scientists. The interface streamlines co
 - [ ] Mention about contraints such as recorded host can participate a single federated learning.
 - [ ] Target host machine might require key file to connect through paramiko. 
 
-## Research
-
-- [ ] Integration of middleware.
-- [ ] API security.
-- [ ] Making appropriate operations async.
-- [ ] Realtime feedback from the endpoints.
-- [ ] File locking
-
-
-## Success Criteria
-
-- Manuel installation versus, saas installation time improvement will be %70.
-- At least 4 client + 1 server.
-- Face detection algorithm will run at 80% accuracy and new data will improve to 85% percent.
-
-### Linting
-
-pyright --outputjson . | jq '.summary | {errorCount, warningCount} | values'
-
-## AWS
-
-Register host:
-
-- curl -X POST https://shaggy-kiwis-happen.loca.lt/ssh/copy_ssh_key_to_remote_host -H "Content-Type: application/json" -d '{"contact_info": "nevzatseferoglu@gmail.com", "ip_address": "54.196.187.0", "ssh_username": "ubuntu", "ssh_password": "", "flower_type": "client", "fl_identifier": "test_model" }'
-- curl -X POST https://wicked-ends-pay.loca.lt/docker/install
-
-## Uploading multiple files
-
-`curl -X POST "http://localhost:8000/docker/upload-source-files/" \
--H "Content-Type: multipart/form-data" \
--F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/uvicorn.log \
--F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/timeout.error \
--F files=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/aws-key.pem`
-
-`curl -X POST "http://localhost:8000/docker/upload-source-files/192.168.1.105/pytorch/" \
--H "Content-Type: multipart/form-data" \
--F file=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/171044024.zip`
-
-`curl -X POST "http://localhost:8000/docker/upload-source-files/192.168.1.105/pytorch/amd64/" \
--H "Content-Type: multipart/form-data" \
--F file=@/Users/nevzatseferoglu/Desktop/flower/example-project/project-source.zip`

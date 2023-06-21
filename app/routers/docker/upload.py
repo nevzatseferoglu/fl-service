@@ -3,6 +3,8 @@ import os
 import shutil
 import subprocess
 import zipfile
+import string
+import random
 from typing import Annotated
 
 import ansible_runner
@@ -42,7 +44,7 @@ router = APIRouter(
 
 
 def generate_deployment_ansible_playbook(
-    dest: str, image: str, sourcedir: str, targetdir: str
+        dest: str, image: str, sourcedir: str, targetdir: str, container_name: str
 ):
     content = f"""- name: Deploy given docker image
   hosts: all
@@ -51,7 +53,7 @@ def generate_deployment_ansible_playbook(
   tasks:
   - name: 
     community.docker.docker_container:
-      name: linuxfederated
+      name: {container_name}
       image: {image}
       network_mode: host
       mounts:
@@ -205,8 +207,10 @@ async def create_upload_file(
             p.wait()
 
     logging.info("Docker image is successfully built in server host")
+    
+    generate_deployment_ansible_playbook(upload_dir, image_name, sourcedir, targetdir, ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k=5)))
 
-    generate_deployment_ansible_playbook(upload_dir, image_name, sourcedir, targetdir)
 
 
 @router.post("/deploy/{ip_address}/")
