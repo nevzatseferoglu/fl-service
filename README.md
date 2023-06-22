@@ -34,9 +34,7 @@ curl --location --request POST 'http://localhost:8000/ssh/generate_ssh_key_pair'
     "fl_identifier": "test_model"
 }'`
 
-`curl -X POST "http://localhost:8000/ssh/copy-ssh-key-to-remote-host" \
--H 'Content-Type: application/json' \
---data-raw '{ "contact_info": "nevzatseferoglu@gmail.com", "ip_address": "192.168.1.105", "ssh_username": "username", "ssh_password": "password", "flower_type": "client", "fl_identifier": "test_model"}'`
+`curl -X POST "http://localhost:8000/ssh/copy-ssh-key-to-remote-host" --header 'Content-Type: application/json' --data-raw '{ "contact_info": "nevzatseferoglu@gmail.com", "ip_address": "192.168.1.105", "ssh_username": "suav", "ssh_password": "abc123", "flower_type": "client", "fl_identifier": "test_model" }'`
 
 ## Upload source file to turn into docker image
 
@@ -48,9 +46,7 @@ curl --location --request POST 'http://localhost:8000/ssh/generate_ssh_key_pair'
 
 - Example;
 
-`curl -X POST "http://localhost:8000/docker/upload-source-files/192.168.1.105/pytorch/" \
--H "Content-Type: multipart/form-data" \
--F file=@/Users/nevzatseferoglu/Desktop/graduation-project-2/fl-service/171044024.zip`
+`curl -X POST "http://localhost:8000/docker/upload-source-files/192.168.1.105/pytorch/amd64/" -H "Content-Type: multipart/form-data" -F file=@/Users/nevzatseferoglu/Desktop/flower/example-project/project-source.zip`
 
 ## Starting deployment
 
