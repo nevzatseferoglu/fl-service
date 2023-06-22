@@ -23,6 +23,7 @@ curl --location --request POST 'http://localhost:8000/ssh/generate_ssh_key_pair'
 
 ## Register an host machine to the service
 
+<<<<<<< HEAD
 `curl --location 'http://localhost:8000/ssh/copy-ssh-key-to-remote-host' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -34,6 +35,11 @@ curl --location --request POST 'http://localhost:8000/ssh/generate_ssh_key_pair'
     "fl_identifier": "test_model"
 }'`
 
+=======
+`curl -X POST "http://localhost:8000/ssh/copy-ssh-key-to-remote-host" \
+-H 'Content-Type: application/json' \
+--data-raw '{ "contact_info": "nevzatseferoglu@gmail.com", "ip_address": "192.168.1.105", "ssh_username": "username", "ssh_password": "password", "flower_type": "client", "fl_identifier": "test_model"}'`
+>>>>>>> 9676025 (update readme)
 
 ## Upload source file to turn into docker image
 

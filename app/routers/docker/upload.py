@@ -212,6 +212,39 @@ async def create_upload_file(
                              string.digits, k=5)))
 
 
+def change_container_name(upload_dir: str):
+    defyaml = os.path.join(upload_dir, "definition.yaml")
+    image_name = ""
+    sourcedir = ""
+    targetdir = ""
+    try:
+        with open(defyaml, "r") as yaml_file:
+            content = yaml.safe_load(yaml_file)
+            cmds = [f'"{i}"' for i in content["entrypoint"]]
+            cmdstr = ""
+            for i, cmd in enumerate(cmds):
+                if i == 0:
+                    cmdstr += f"[{cmd}, "
+                elif i == len(cmds) - 1:
+                    cmdstr += f"{cmd}]"
+                else:
+                    cmdstr += f"{cmd}, "
+
+            generate_dockerfile_pytorch(cmdstr, upload_dir)
+            image_name = content["image_name"]
+            sourcedir = content["sourcedir"]
+            targetdir = content["targetdir"]
+            logging.info(f"Successfully created dockerfile in {upload_dir}")
+
+    except (yaml.YAMLError, OSError) as e:
+        err = f"Failed to read {defyaml} as a yaml file, {e}"
+        logging.error(err)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
+
+    generate_deployment_ansible_playbook(upload_dir, image_name, sourcedir, targetdir, ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k=8)))
+
+
 
 @router.post("/deploy/{ip_address}/")
 async def deploy(ip_address: Annotated[str, Path()], db: Session = Depends(get_db)):
@@ -234,11 +267,15 @@ async def deploy(ip_address: Annotated[str, Path()], db: Session = Depends(get_d
     dplfile = os.path.join(
         ANSIBLE_INVENTORY_DIR, host.fl_identifier, "source", "deployment.yaml"
     )
+
     # Create the upload directory if it doesn't exist
     if not os.path.exists(dplfile):
         err = f"Deployment file {dplfile} not found"
         logging.error(err)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err)
+
+    upload_dir = os.path.join(ANSIBLE_INVENTORY_DIR, host.fl_identifier, "source")
+    change_container_name(upload_dir)
 
     inventory_path = os.path.join(ANSIBLE_INVENTORY_DIR, str(host.fl_identifier))
     if not os.path.exists(inventory_path):
