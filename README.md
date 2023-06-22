@@ -28,8 +28,8 @@ curl --location --request POST 'http://localhost:8000/ssh/generate_ssh_key_pair'
 --data-raw '{
     "contact_info": "nevzatseferoglu@gmail.com",
     "ip_address": "192.168.1.105",
-    "ssh_username": "suav",
-    "ssh_password": "abc123",
+    "ssh_username": "username",
+    "ssh_password": "password",
     "flower_type": "client",
     "fl_identifier": "test_model"
 }'`
