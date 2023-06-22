@@ -15,6 +15,25 @@ See: Command line client from **[here](https://github.com/nevzatseferoglu/flsvc)
 <img src="./assets/ansible-playbook.png" alt="Docker installation with callback execution" style="width:20%;">
 <img src="./assets/docker-diagram.png" alt="Client image generation and deployment" style="width:70%;">
 
+## Generate SSH key-pair for the server
+
+`
+curl --location --request POST 'http://localhost:8000/ssh/generate_ssh_key_pair'
+`
+
+## Register an host machine to the service
+
+`curl --location 'http://localhost:8000/ssh/copy-ssh-key-to-remote-host' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "contact_info": "nevzatseferoglu@gmail.com",
+    "ip_address": "192.168.1.105",
+    "ssh_username": "suav",
+    "ssh_password": "abc123",
+    "flower_type": "client",
+    "fl_identifier": "test_model"
+}'`
+
 
 ## Upload source file to turn into docker image
 
