@@ -1,0 +1,17 @@
+- name: Deploy given docker image
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: 
+    community.docker.docker_container:
+      name: LC4EAZJ3
+      image: nsbyte/linuxfederated_test:latest
+      network_mode: host
+      mounts:
+        - type: "bind"
+          read_only: true
+          source: /home
+          target: /app/model/data
+    async: 600
+    poll: 5

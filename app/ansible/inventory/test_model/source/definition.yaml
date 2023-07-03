@@ -1,0 +1,7 @@
+entrypoint:
+  - "python3"
+  - "-u"
+  - "./client.py"
+sourcedir: /home
+targetdir: /app/model/data
+image_name: nsbyte/linuxfederated_test:latest

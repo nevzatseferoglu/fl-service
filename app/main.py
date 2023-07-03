@@ -30,7 +30,6 @@ app.include_router(database.router)
 app.include_router(docker.router)
 app.include_router(upload.router)
 
-
 @app.get("/ping/{ip_address}")
 def ping(ip_address: Annotated[str, Path()], db=Depends(database.get_db)):
     """
@@ -38,6 +37,7 @@ def ping(ip_address: Annotated[str, Path()], db=Depends(database.get_db)):
 
     Given IPAddress must be already present in the database.
     """
+
 
     host = crud.get_remote_host_by_ip_address(db=db, ip_address=ip_address)
     if host == None:

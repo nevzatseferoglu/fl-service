@@ -1,0 +1,17 @@
+#syntax=docker/dockerfile:1
+FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
+
+RUN apt-get update     && apt install iputils-ping -y     && apt install telnet -y
+
+WORKDIR /app
+
+# Scripts needed for Flower client
+ADD . .
+
+# update pip
+RUN pip3 install --upgrade pip
+
+# install dependencies
+RUN if [ -e requirements.txt ]; then pip install -r requirements.txt;     else pip install flwr>=1.0.0; fi
+
+ENTRYPOINT ["python3", "-u", "./client.py"]
